@@ -90,7 +90,7 @@ Palette tiles are drag sources; the canvas is a drop target with visual drag-ove
 - The builder is a **frontend-only** workflow for this assignment; form submission URL is displayed and included in JSON but not posted to a backend endpoint.
 - **18 field types** appear in the palette; **8 core types** have live canvas previews (text, textarea, number, email, phone, select, radio, checkbox). Remaining types show a placeholder preview but can still be added and configured.
 - Form state is stored in **browser `localStorage`** (`form-builder-draft`), not in the database.
-- The existing LMS admin layout (sidebar, fixed header) is reused; form builder styles account for the fixed header offset.
+- The form builder uses a **full-width Edunet layout** (top nav, page header, canvas + palette grid). Legacy LMS sidebar chrome is hidden on this page.
 - **Settings** tab and **Cancel** button are present in the UI as placeholders without full workflow implementation.
 - Tailwind CSS is scoped to `.form-builder` to avoid conflicts with the existing Bootstrap-based admin theme.
 
@@ -109,6 +109,202 @@ Palette tiles are drag sources; the canvas is a drop target with visual drag-ove
 | 7 | Canvas field reordering via move handle |
 | 8 | JSON schema output via **Next** button (modal + `console.log`) |
 | 9 | Polish — localStorage persistence, delete confirmation, preview mode, drag-over styling |
+| 10 | Edunet UI redesign — full-width layout, navy/blue theme, premium cards & modals |
+
+---
+
+## Step-by-Step Walkthrough (Screenshots)
+
+Screenshots in [`docs/screenshots/`](docs/screenshots/) reflect the **current Edunet full-width UI**. To recapture any step: run `php artisan serve`, open `http://127.0.0.1:8000`, use `Win + Shift + S`, and save over the matching filename.
+
+| Step | Screenshot file(s) |
+|------|-------------------|
+| 1 — Layout | `step-01-layout.png` |
+| 2 — Palette | `step-02-palette.png` |
+| 3 — Drag & drop | `step-03-drag-drop.png` |
+| 4 — Field previews | `step-04-field-previews.png`, `step-04-default-value-sync.png` |
+| 5 — Card actions | `step-05-field-actions.png` |
+| 6 — Field options | `step-06-field-options.png`, `step-06-validation-options.png` |
+| 7 — Reorder | `step-07-field-reorder.png` |
+| 8 — JSON schema | `step-08-json-schema.png` |
+| 9 — Delete modal | `step-09-delete-confirmation.png` |
+| 9 — Preview mode | `step-09-preview-mode.png` |
+| 9 — localStorage | `step-09-localstorage-overview.png`, `step-09-localstorage-fields.png`, `step-09-localstorage-field-detail.png` |
+| 10 — UI redesign | `step-10-ui-redesign.png` |
+
+### Step 1 — Form builder layout
+
+Full-width Edunet top nav, “Create Form” page header, meta card, canvas, palette, and footer actions.
+
+![Step 1 — Form builder layout](docs/screenshots/step-01-layout.png)
+
+**What to verify**
+- Edunet logo + “Form Builder” in the 72px top nav
+- “Create Form” hero with form name + submission URL pill
+- Form Canvas on the left, Add Fields panel on the right
+- Cancel / Next below the builder (not sticky)
+
+---
+
+### Step 2 — Field palette (18 types)
+
+Two-column grid of draggable tiles with icon, title, and description. Scroll the palette to see all 18 types.
+
+![Step 2 — Field palette](docs/screenshots/step-02-palette.png)
+
+**What to verify**
+- Add Fields / Field Options subtabs
+- Tiles show icon + label + short description
+- Each tile is draggable onto the canvas
+
+---
+
+### Step 3 — Drag and drop (palette → canvas)
+
+Drag a field from the palette onto the canvas. The canvas border highlights blue while dragging.
+
+![Step 3 — Drag and drop](docs/screenshots/step-03-drag-drop.png)
+
+**What to verify**
+- Field card appears on the canvas after drop
+- Unique field ID assigned (`field_<timestamp>_<n>`)
+- Empty-state drop zone hides once fields exist
+- Blue drag-over styling on the canvas surface
+
+---
+
+### Step 4 — Field preview components
+
+Canvas fields render live previews cloned from Blade `<template>` fragments. Option changes sync to the card immediately.
+
+![Step 4 — Placeholder preview on canvas](docs/screenshots/step-04-field-previews.png)
+
+![Step 4 — Default value syncs to canvas](docs/screenshots/step-04-default-value-sync.png)
+
+**What to verify**
+- Placeholder, default value, and required state update the canvas preview
+- Field type badge in the card header (e.g. `TEXT INPUT`)
+- Unsupported types show a “preview coming soon” placeholder
+
+---
+
+### Step 5 — Field card actions
+
+Each card exposes move, edit, duplicate, and delete via ghost icon buttons on hover/selection.
+
+![Step 5 — Field card actions](docs/screenshots/step-05-field-actions.png)
+
+**What to verify**
+- Drag handle strip on the left
+- Edit switches to Field Options tab
+- Duplicate adds a copy below
+- Delete opens the confirmation modal
+- Selected card: Edunet blue `#5B6FBE` border + glow
+
+---
+
+### Step 6 — Field options panel
+
+Configure label, placeholder, default value, validation, CSS class, required, and remove.
+
+![Step 6 — Field options (basic)](docs/screenshots/step-06-field-options.png)
+
+![Step 6 — Field options (validation & appearance)](docs/screenshots/step-06-validation-options.png)
+
+**What to verify**
+- Field Options tab shows settings for the selected card
+- Min/max length, required checkbox, CSS class apply to the preview
+- **Remove field** button at the bottom of the panel
+
+---
+
+### Step 7 — Canvas field reordering
+
+Reorder fields using the move handle on each card.
+
+![Step 7 — Multiple fields ready to reorder](docs/screenshots/step-07-field-reorder.png)
+
+**What to verify**
+- Drag a card by the move handle (six-dot grip)
+- Blue before/after drop indicators while reordering
+- Field `order` updates in state and JSON output
+
+---
+
+### Step 8 — JSON schema output
+
+Click **Next** to open the schema modal with copyable JSON.
+
+![Step 8 — JSON schema modal](docs/screenshots/step-08-json-schema.png)
+
+**What to verify**
+- Modal shows formatted JSON for `title`, `submissionUrl`, and `fields`
+- Copy icon on the textarea and **Copy JSON** footer button
+- JSON is also logged to the browser console
+- Close button dismisses the modal
+
+---
+
+### Step 9 — Polish & bonus features
+
+#### Delete confirmation
+
+Custom modal replaces `window.confirm()` before removing a field.
+
+![Step 9 — Delete confirmation](docs/screenshots/step-09-delete-confirmation.png)
+
+**What to verify**
+- Large red warning icon + field preview inside the modal
+- **Keep field** cancels; **Delete field** uses Edunet primary blue
+- Focus trap and Escape key support
+
+#### Preview mode
+
+Click **Preview** in the toolbar to hide the palette, drag handles, and card actions for a clean form view. The button switches to **Exit Preview**.
+
+![Step 9 — Preview mode](docs/screenshots/step-09-preview-mode.png)
+
+**What to verify**
+- Palette panel is hidden
+- Field card headers, drag handles, and action icons are hidden
+- Form title input is read-only in preview
+- Toggle **Exit Preview** to return to editor mode
+
+#### localStorage persistence
+
+Form title, fields, selection, and preview state are auto-saved to `form-builder-draft` in browser localStorage (debounced ~250ms). Reload the page to restore the draft.
+
+![Step 9 — localStorage overview](docs/screenshots/step-09-localstorage-overview.png)
+
+![Step 9 — localStorage fields array](docs/screenshots/step-09-localstorage-fields.png)
+
+![Step 9 — localStorage field detail](docs/screenshots/step-09-localstorage-field-detail.png)
+
+**What to verify**
+- DevTools → Application → Local Storage → `http://127.0.0.1:8000`
+- Key `form-builder-draft` contains `title`, `fields`, `selectedFieldId`, and `previewMode`
+- Each field stores `id`, `type`, `label`, `placeholder`, `value`, `required`, `minLength`, `maxLength`, `cssClass`, and `options`
+- Edit a field, refresh the page — canvas and options panel restore from the draft
+
+#### Drag-over feedback
+
+Canvas border and drop zone animate while dragging from the palette (see Step 3).
+
+---
+
+### Step 10 — Edunet UI redesign
+
+Full-width product page with navy/blue theme and premium cards.
+
+![Step 10 — Edunet UI redesign](docs/screenshots/step-10-ui-redesign.png)
+
+**What to verify**
+- No dark LMS sidebar
+- 65% canvas / 35% palette at ≥1024px
+- Colors: navy `#07142F`, blue `#5B6FBE`, light `#F3F6FF`
+- Non-sticky footer actions inside the page container
+
+---
 
 ### Field options supported
 
