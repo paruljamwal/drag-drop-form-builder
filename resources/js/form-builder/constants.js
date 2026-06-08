@@ -11,6 +11,7 @@
  * @property {string} type
  * @property {string} label
  * @property {string} placeholder
+ * @property {string} value
  * @property {boolean} required
  * @property {string[]} options
  */
@@ -83,6 +84,7 @@ export function createDefaultField(type) {
         type,
         label: meta?.label ?? 'Field',
         placeholder: '',
+        value: '',
         required: false,
         options: [],
     };

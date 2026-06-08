@@ -14,6 +14,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
 /* harmony import */ var _field_preview__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./field-preview */ "./resources/js/form-builder/field-preview.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 
 function initCanvas() {
@@ -29,9 +41,9 @@ function initCanvas() {
     var hasFields = fields.length > 0;
     emptyState.classList.toggle('hidden', hasFields);
     fieldsList.classList.toggle('hidden', !hasFields);
-    fieldsList.innerHTML = fields.map(function (field) {
-      return (0,_field_preview__WEBPACK_IMPORTED_MODULE_1__.renderFieldCard)(field);
-    }).join('');
+    fieldsList.replaceChildren.apply(fieldsList, _toConsumableArray(fields.map(function (field) {
+      return (0,_field_preview__WEBPACK_IMPORTED_MODULE_1__.renderFieldCardElement)(field);
+    })));
   });
 }
 
@@ -64,6 +76,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {string} type
  * @property {string} label
  * @property {string} placeholder
+ * @property {string} value
  * @property {boolean} required
  * @property {string[]} options
  */
@@ -183,6 +196,7 @@ function createDefaultField(type) {
     type: type,
     label: (_meta$label = meta === null || meta === void 0 ? void 0 : meta.label) !== null && _meta$label !== void 0 ? _meta$label : 'Field',
     placeholder: '',
+    value: '',
     required: false,
     options: []
   };
@@ -286,67 +300,213 @@ function initCanvasDropTarget() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "renderFieldCard": () => (/* binding */ renderFieldCard),
-/* harmony export */   "renderFieldPreview": () => (/* binding */ renderFieldPreview)
+/* harmony export */   "renderFieldCardElement": () => (/* binding */ renderFieldCardElement),
+/* harmony export */   "renderFieldPreviewElement": () => (/* binding */ renderFieldPreviewElement)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./resources/js/form-builder/constants.js");
 
 /**
- * @param {import('./constants').FormField} field
- * @returns {string}
+ * @param {string} templateId
+ * @returns {DocumentFragment|null}
  */
 
-function renderFieldPreview(field) {
-  if (!_constants__WEBPACK_IMPORTED_MODULE_0__.PREVIEW_FIELD_TYPES.includes(field.type)) {
-    return "\n            <p class=\"text-sm text-gray-500\">\n                Preview for <span class=\"font-medium text-gray-700\">".concat(escapeHtml(field.label), "</span> coming soon.\n            </p>\n        ");
-  }
-
-  var label = "\n        <label class=\"mb-1.5 block text-sm font-medium text-gray-700\">\n            ".concat(escapeHtml(field.label)).concat(field.required ? '<span class="text-red-500"> *</span>' : '', "\n        </label>\n    ");
-
-  switch (field.type) {
-    case 'textarea':
-      return "\n                ".concat(label, "\n                <textarea\n                    class=\"form-builder-preview-input min-h-[80px] resize-none\"\n                    placeholder=\"").concat(escapeHtml(field.placeholder), "\"\n                    disabled\n                ></textarea>\n            ");
-
-    case 'select':
-      return "\n                ".concat(label, "\n                <select class=\"form-builder-preview-input\" disabled>\n                    <option value=\"\">Select an option</option>\n                    ").concat(field.options.map(function (option) {
-        return "<option>".concat(escapeHtml(option), "</option>");
-      }).join(''), "\n                </select>\n            ");
-
-    case 'radio':
-      return "\n                ".concat(label, "\n                <div class=\"space-y-2\">\n                    ").concat(field.options.map(function (option, index) {
-        return "\n                        <label class=\"flex items-center gap-2 text-sm text-gray-700\">\n                            <input type=\"radio\" name=\"".concat(escapeHtml(field.id), "\" disabled ").concat(index === 0 ? 'checked' : '', ">\n                            <span>").concat(escapeHtml(option), "</span>\n                        </label>\n                    ");
-      }).join(''), "\n                </div>\n            ");
-
-    case 'checkbox':
-      return "\n                ".concat(label, "\n                <div class=\"space-y-2\">\n                    ").concat(field.options.map(function (option) {
-        return "\n                        <label class=\"flex items-center gap-2 text-sm text-gray-700\">\n                            <input type=\"checkbox\" disabled>\n                            <span>".concat(escapeHtml(option), "</span>\n                        </label>\n                    ");
-      }).join(''), "\n                </div>\n            ");
-
-    default:
-      {
-        var inputType = field.type === 'phone' ? 'tel' : field.type;
-        return "\n                ".concat(label, "\n                <input\n                    type=\"").concat(escapeHtml(inputType), "\"\n                    class=\"form-builder-preview-input\"\n                    placeholder=\"").concat(escapeHtml(field.placeholder), "\"\n                    disabled\n                >\n            ");
-      }
-  }
+function cloneTemplate(templateId) {
+  var template = document.getElementById(templateId);
+  return template ? template.content.cloneNode(true) : null;
 }
 /**
  * @param {import('./constants').FormField} field
- * @returns {string}
+ * @returns {HTMLElement}
  */
 
-function renderFieldCard(field) {
-  var _meta$label;
+
+function renderFieldPreviewElement(field) {
+  var previewType = _constants__WEBPACK_IMPORTED_MODULE_0__.PREVIEW_FIELD_TYPES.includes(field.type) ? field.type : 'unsupported';
+  var fragment = cloneTemplate("fb-preview-".concat(previewType));
+  var preview = fragment === null || fragment === void 0 ? void 0 : fragment.firstElementChild;
+
+  if (!(preview instanceof HTMLElement)) {
+    throw new Error("Missing preview template for field type: ".concat(previewType));
+  }
+
+  hydratePreview(preview, field);
+  return preview;
+}
+/**
+ * @param {import('./constants').FormField} field
+ * @returns {HTMLElement}
+ */
+
+function renderFieldCardElement(field) {
+  var fragment = cloneTemplate('fb-template-card');
+  var card = fragment === null || fragment === void 0 ? void 0 : fragment.querySelector('.form-builder-field-card');
+
+  if (!(card instanceof HTMLElement)) {
+    throw new Error('Missing field card template');
+  }
 
   var meta = (0,_constants__WEBPACK_IMPORTED_MODULE_0__.getFieldTypeMeta)(field.type);
-  return "\n        <article class=\"form-builder-field-card\" data-field-id=\"".concat(escapeHtml(field.id), "\" role=\"listitem\">\n            <header class=\"form-builder-field-card__header\">\n                <span class=\"form-builder-field-card__type\">").concat(escapeHtml((_meta$label = meta === null || meta === void 0 ? void 0 : meta.label) !== null && _meta$label !== void 0 ? _meta$label : field.type), "</span>\n            </header>\n            <div class=\"form-builder-field-card__body\">\n                ").concat(renderFieldPreview(field), "\n            </div>\n        </article>\n    ");
+  card.dataset.fieldId = field.id;
+  var typeLabel = card.querySelector('[data-fb-part="type-label"]');
+
+  if (typeLabel) {
+    var _meta$label;
+
+    typeLabel.textContent = (_meta$label = meta === null || meta === void 0 ? void 0 : meta.label) !== null && _meta$label !== void 0 ? _meta$label : field.type;
+  }
+
+  var body = card.querySelector('[data-fb-slot="body"]');
+
+  if (body) {
+    body.replaceChildren(renderFieldPreviewElement(field));
+  }
+
+  return card;
 }
 /**
- * @param {string} value
- * @returns {string}
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
  */
 
-function escapeHtml(value) {
-  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+function hydratePreview(root, field) {
+  var previewType = root.getAttribute('data-fb-field-preview');
+
+  switch (previewType) {
+    case 'select':
+      hydrateLabel(root, field);
+      hydrateSelectOptions(root, field);
+      break;
+
+    case 'radio':
+      hydrateOptionGroup(root, field, 'radio');
+      break;
+
+    case 'checkbox':
+      hydrateOptionGroup(root, field, 'checkbox');
+      break;
+
+    case 'unsupported':
+      hydrateUnsupported(root, field);
+      break;
+
+    default:
+      hydrateLabel(root, field);
+      hydrateInput(root, field);
+      break;
+  }
+}
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ */
+
+
+function hydrateLabel(root, field) {
+  var labelText = root.querySelector('[data-fb-part="label-text"]');
+
+  if (labelText) {
+    labelText.textContent = field.label;
+  }
+
+  var required = root.querySelector('[data-fb-part="required"]');
+
+  if (required) {
+    required.classList.toggle('hidden', !field.required);
+  }
+}
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ */
+
+
+function hydrateInput(root, field) {
+  var input = root.querySelector('[data-fb-part="input"]');
+
+  if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement)) {
+    return;
+  }
+
+  if ('placeholder' in input) {
+    input.placeholder = field.placeholder || '';
+  }
+
+  input.value = field.value || '';
+}
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ */
+
+
+function hydrateSelectOptions(root, field) {
+  var select = root.querySelector('[data-fb-part="input"]');
+
+  if (!(select instanceof HTMLSelectElement)) {
+    return;
+  }
+
+  select.querySelectorAll('option:not([value=""])').forEach(function (option) {
+    return option.remove();
+  });
+  field.options.forEach(function (optionValue) {
+    var option = document.createElement('option');
+    option.value = optionValue;
+    option.textContent = optionValue;
+    select.appendChild(option);
+  });
+}
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ * @param {'radio' | 'checkbox'} inputType
+ */
+
+
+function hydrateOptionGroup(root, field, inputType) {
+  hydrateLabel(root, field);
+  var container = root.querySelector('[data-fb-part="options"]');
+  var rowTemplate = root.querySelector('template[data-fb-option-row]');
+
+  if (!(container instanceof HTMLElement) || !(rowTemplate instanceof HTMLTemplateElement)) {
+    return;
+  }
+
+  container.replaceChildren();
+  field.options.forEach(function (optionValue, index) {
+    var row = rowTemplate.content.cloneNode(true);
+    var input = row.querySelector('[data-fb-part="option-input"]');
+    var label = row.querySelector('[data-fb-part="option-label"]');
+
+    if (input instanceof HTMLInputElement) {
+      input.type = inputType;
+      input.name = field.id;
+      input.value = optionValue;
+
+      if (inputType === 'radio' && index === 0) {
+        input.checked = true;
+      }
+    }
+
+    if (label) {
+      label.textContent = optionValue;
+    }
+
+    container.appendChild(row);
+  });
+}
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ */
+
+
+function hydrateUnsupported(root, field) {
+  var labelText = root.querySelector('[data-fb-part="label-text"]');
+
+  if (labelText) {
+    labelText.textContent = field.label;
+  }
 }
 
 /***/ }),

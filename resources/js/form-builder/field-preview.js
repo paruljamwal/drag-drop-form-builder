@@ -1,113 +1,194 @@
 import { getFieldTypeMeta, PREVIEW_FIELD_TYPES } from './constants';
 
 /**
- * @param {import('./constants').FormField} field
- * @returns {string}
+ * @param {string} templateId
+ * @returns {DocumentFragment|null}
  */
-export function renderFieldPreview(field) {
-    if (!PREVIEW_FIELD_TYPES.includes(field.type)) {
-        return `
-            <p class="text-sm text-gray-500">
-                Preview for <span class="font-medium text-gray-700">${escapeHtml(field.label)}</span> coming soon.
-            </p>
-        `;
-    }
+function cloneTemplate(templateId) {
+    const template = document.getElementById(templateId);
 
-    const label = `
-        <label class="mb-1.5 block text-sm font-medium text-gray-700">
-            ${escapeHtml(field.label)}${field.required ? '<span class="text-red-500"> *</span>' : ''}
-        </label>
-    `;
-
-    switch (field.type) {
-        case 'textarea':
-            return `
-                ${label}
-                <textarea
-                    class="form-builder-preview-input min-h-[80px] resize-none"
-                    placeholder="${escapeHtml(field.placeholder)}"
-                    disabled
-                ></textarea>
-            `;
-
-        case 'select':
-            return `
-                ${label}
-                <select class="form-builder-preview-input" disabled>
-                    <option value="">Select an option</option>
-                    ${field.options.map((option) => `<option>${escapeHtml(option)}</option>`).join('')}
-                </select>
-            `;
-
-        case 'radio':
-            return `
-                ${label}
-                <div class="space-y-2">
-                    ${field.options.map((option, index) => `
-                        <label class="flex items-center gap-2 text-sm text-gray-700">
-                            <input type="radio" name="${escapeHtml(field.id)}" disabled ${index === 0 ? 'checked' : ''}>
-                            <span>${escapeHtml(option)}</span>
-                        </label>
-                    `).join('')}
-                </div>
-            `;
-
-        case 'checkbox':
-            return `
-                ${label}
-                <div class="space-y-2">
-                    ${field.options.map((option) => `
-                        <label class="flex items-center gap-2 text-sm text-gray-700">
-                            <input type="checkbox" disabled>
-                            <span>${escapeHtml(option)}</span>
-                        </label>
-                    `).join('')}
-                </div>
-            `;
-
-        default: {
-            const inputType = field.type === 'phone' ? 'tel' : field.type;
-            return `
-                ${label}
-                <input
-                    type="${escapeHtml(inputType)}"
-                    class="form-builder-preview-input"
-                    placeholder="${escapeHtml(field.placeholder)}"
-                    disabled
-                >
-            `;
-        }
-    }
+    return template ? template.content.cloneNode(true) : null;
 }
 
 /**
  * @param {import('./constants').FormField} field
- * @returns {string}
+ * @returns {HTMLElement}
  */
-export function renderFieldCard(field) {
+export function renderFieldPreviewElement(field) {
+    const previewType = PREVIEW_FIELD_TYPES.includes(field.type) ? field.type : 'unsupported';
+    const fragment = cloneTemplate(`fb-preview-${previewType}`);
+    const preview = fragment?.firstElementChild;
+
+    if (!(preview instanceof HTMLElement)) {
+        throw new Error(`Missing preview template for field type: ${previewType}`);
+    }
+
+    hydratePreview(preview, field);
+
+    return preview;
+}
+
+/**
+ * @param {import('./constants').FormField} field
+ * @returns {HTMLElement}
+ */
+export function renderFieldCardElement(field) {
+    const fragment = cloneTemplate('fb-template-card');
+    const card = fragment?.querySelector('.form-builder-field-card');
+
+    if (!(card instanceof HTMLElement)) {
+        throw new Error('Missing field card template');
+    }
+
     const meta = getFieldTypeMeta(field.type);
+    card.dataset.fieldId = field.id;
 
-    return `
-        <article class="form-builder-field-card" data-field-id="${escapeHtml(field.id)}" role="listitem">
-            <header class="form-builder-field-card__header">
-                <span class="form-builder-field-card__type">${escapeHtml(meta?.label ?? field.type)}</span>
-            </header>
-            <div class="form-builder-field-card__body">
-                ${renderFieldPreview(field)}
-            </div>
-        </article>
-    `;
+    const typeLabel = card.querySelector('[data-fb-part="type-label"]');
+    if (typeLabel) {
+        typeLabel.textContent = meta?.label ?? field.type;
+    }
+
+    const body = card.querySelector('[data-fb-slot="body"]');
+    if (body) {
+        body.replaceChildren(renderFieldPreviewElement(field));
+    }
+
+    return card;
 }
 
 /**
- * @param {string} value
- * @returns {string}
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
  */
-function escapeHtml(value) {
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+function hydratePreview(root, field) {
+    const previewType = root.getAttribute('data-fb-field-preview');
+
+    switch (previewType) {
+        case 'select':
+            hydrateLabel(root, field);
+            hydrateSelectOptions(root, field);
+            break;
+        case 'radio':
+            hydrateOptionGroup(root, field, 'radio');
+            break;
+        case 'checkbox':
+            hydrateOptionGroup(root, field, 'checkbox');
+            break;
+        case 'unsupported':
+            hydrateUnsupported(root, field);
+            break;
+        default:
+            hydrateLabel(root, field);
+            hydrateInput(root, field);
+            break;
+    }
+}
+
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ */
+function hydrateLabel(root, field) {
+    const labelText = root.querySelector('[data-fb-part="label-text"]');
+
+    if (labelText) {
+        labelText.textContent = field.label;
+    }
+
+    const required = root.querySelector('[data-fb-part="required"]');
+
+    if (required) {
+        required.classList.toggle('hidden', !field.required);
+    }
+}
+
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ */
+function hydrateInput(root, field) {
+    const input = root.querySelector('[data-fb-part="input"]');
+
+    if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement)) {
+        return;
+    }
+
+    if ('placeholder' in input) {
+        input.placeholder = field.placeholder || '';
+    }
+
+    input.value = field.value || '';
+}
+
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ */
+function hydrateSelectOptions(root, field) {
+    const select = root.querySelector('[data-fb-part="input"]');
+
+    if (!(select instanceof HTMLSelectElement)) {
+        return;
+    }
+
+    select.querySelectorAll('option:not([value=""])').forEach((option) => option.remove());
+
+    field.options.forEach((optionValue) => {
+        const option = document.createElement('option');
+        option.value = optionValue;
+        option.textContent = optionValue;
+        select.appendChild(option);
+    });
+}
+
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ * @param {'radio' | 'checkbox'} inputType
+ */
+function hydrateOptionGroup(root, field, inputType) {
+    hydrateLabel(root, field);
+
+    const container = root.querySelector('[data-fb-part="options"]');
+    const rowTemplate = root.querySelector('template[data-fb-option-row]');
+
+    if (!(container instanceof HTMLElement) || !(rowTemplate instanceof HTMLTemplateElement)) {
+        return;
+    }
+
+    container.replaceChildren();
+
+    field.options.forEach((optionValue, index) => {
+        const row = rowTemplate.content.cloneNode(true);
+        const input = row.querySelector('[data-fb-part="option-input"]');
+        const label = row.querySelector('[data-fb-part="option-label"]');
+
+        if (input instanceof HTMLInputElement) {
+            input.type = inputType;
+            input.name = field.id;
+            input.value = optionValue;
+
+            if (inputType === 'radio' && index === 0) {
+                input.checked = true;
+            }
+        }
+
+        if (label) {
+            label.textContent = optionValue;
+        }
+
+        container.appendChild(row);
+    });
+}
+
+/**
+ * @param {HTMLElement} root
+ * @param {import('./constants').FormField} field
+ */
+function hydrateUnsupported(root, field) {
+    const labelText = root.querySelector('[data-fb-part="label-text"]');
+
+    if (labelText) {
+        labelText.textContent = field.label;
+    }
 }

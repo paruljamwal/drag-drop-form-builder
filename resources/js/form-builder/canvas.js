@@ -1,5 +1,5 @@
 import { onFieldsChange } from './state';
-import { renderFieldCard } from './field-preview';
+import { renderFieldCardElement } from './field-preview';
 
 export function initCanvas() {
     const root = document.getElementById('form-builder-canvas');
@@ -16,6 +16,6 @@ export function initCanvas() {
         emptyState.classList.toggle('hidden', hasFields);
         fieldsList.classList.toggle('hidden', !hasFields);
 
-        fieldsList.innerHTML = fields.map((field) => renderFieldCard(field)).join('');
+        fieldsList.replaceChildren(...fields.map((field) => renderFieldCardElement(field)));
     });
 }
