@@ -13,8 +13,12 @@
             <div class="app-header1 header py-2 d-flex">
                 <div class="container-fluid">
                     <div class="d-flex">
-                        <a class="header-brand">
-                            <span style="color:#ffffff; font-size: 24px;" class="header-brand-img mobile-logo">ef</span>
+                        <a class="header-brand" href="{{ url('/') }}" aria-label="Edunet Foundation home">
+                            <img
+                                src="{{ asset('images/edunet-logo.svg') }}"
+                                class="header-brand-img app-brand-logo app-brand-logo--header"
+                                alt="Edunet Foundation"
+                            >
                         </a>
                         <a aria-label="Hide Sidebar" class="app-sidebar__toggle" data-bs-toggle="sidebar"
                             href="javascript:void(0)"><i class=""><svg xmlns="http://www.w3.org/2000/svg"
@@ -55,11 +59,17 @@
         <div class=" app-sidebar__overlay" data-bs-toggle="sidebar">
         </div>
             <aside class="app-sidebar doc-sidebar">
-                <a class="header-brand sidemenu-header-brand" href="{{ url('/') }}">
-                    <img src="{{ asset('your_logo_here.png') }}"
-                        class="header-brand-img desktop-logo" alt="">
-                    <span style="color:#ffffff; font-size: 24px;" class="header-brand-img mobile-logo">LMS</span>
-                </a>
+                <div class="app-brand-bar">
+                    <a class="app-brand-bar__link" href="{{ url('/') }}" aria-label="Edunet Foundation home">
+                        <img
+                            src="{{ asset('images/edunet-logo.svg') }}"
+                            class="app-brand-logo app-brand-logo--sidebar"
+                            alt="Edunet Foundation"
+                            width="160"
+                            height="52"
+                        >
+                    </a>
+                </div>
 
                 <ul class="side-menu">
 
