@@ -1,13 +1,13 @@
 <aside
     id="form-builder-palette"
-    class="w-full shrink-0 lg:w-96 lg:min-w-[22rem]"
+    class="form-builder-palette"
     aria-label="Field palette"
 >
-    <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
-        <nav class="flex border-b border-gray-100" aria-label="Palette sections">
+    <div class="form-builder-palette__panel">
+        <nav class="form-builder-palette__tabs" aria-label="Palette sections">
             <button
                 type="button"
-                class="form-builder-subtab form-builder-subtab--active flex-1"
+                class="form-builder-subtab form-builder-subtab--active"
                 data-palette-tab="add-fields"
                 aria-selected="true"
             >
@@ -15,7 +15,7 @@
             </button>
             <button
                 type="button"
-                class="form-builder-subtab form-builder-subtab--inactive flex-1"
+                class="form-builder-subtab form-builder-subtab--inactive"
                 data-palette-tab="field-options"
                 aria-selected="false"
             >
@@ -23,29 +23,31 @@
             </button>
         </nav>
 
-        <div
-            class="p-4"
-            data-palette-panel="add-fields"
-        >
-            <p class="mb-3 text-xs text-gray-500">Drag a field onto the canvas</p>
+        <div class="form-builder-palette__body" data-palette-panel="add-fields">
+            <p class="form-builder-palette__hint">Drag fields onto the canvas</p>
             <div
                 id="form-builder-palette-grid"
-                class="grid grid-cols-2 gap-2"
+                class="form-builder-palette__grid"
                 role="list"
             ></div>
         </div>
 
         <div
-            class="hidden p-4"
+            class="form-builder-palette__body hidden"
             data-palette-panel="field-options"
         >
             <div
                 id="form-builder-field-options-empty"
-                class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center"
+                class="form-builder-options-empty"
             >
-                <p class="text-sm font-medium text-gray-700">No field selected</p>
-                <p class="mt-1 text-xs text-gray-500">
-                    Select a field on the canvas to edit its options.
+                <div class="form-builder-options-empty__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m-6 8a2 2 0 1 0 0-4m0 4a2 2 0 1 1 0-4m0 4v2m0-6V4m6 10v2m0-2a2 2 0 1 0 0-4m0 4a2 2 0 1 1 0-4m0 4v2m0-6V4" />
+                    </svg>
+                </div>
+                <p class="form-builder-options-empty__title">No field selected</p>
+                <p class="form-builder-options-empty__text">
+                    Click a field on the canvas or use the edit icon to configure it.
                 </p>
             </div>
 

@@ -1328,6 +1328,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./resources/js/form-builder/constants.js");
 
+/** Short descriptions for palette tiles (display only). */
+
+var FIELD_DESCRIPTIONS = {
+  text: 'Single-line answer',
+  textarea: 'Multi-line text',
+  number: 'Numeric input',
+  email: 'Email address',
+  phone: 'Phone number',
+  select: 'Pick one option',
+  radio: 'Single choice list',
+  checkbox: 'Multiple choices',
+  date: 'Calendar date',
+  file: 'Upload a file',
+  title: 'Section heading',
+  description: 'Helper text block',
+  newline: 'Vertical spacing',
+  page_break: 'Split into pages',
+  hidden: 'Hidden value field',
+  state: 'US state selector',
+  city: 'City selector',
+  state_city: 'State and city pair'
+};
 function initPalette() {
   var root = document.getElementById('form-builder-palette');
 
@@ -1347,7 +1369,10 @@ function renderFieldTiles(root) {
   }
 
   grid.innerHTML = _constants__WEBPACK_IMPORTED_MODULE_0__.FIELD_TYPES.map(function (field) {
-    return "\n        <div\n            class=\"form-builder-palette-tile\"\n            data-field-type=\"".concat(field.type, "\"\n            draggable=\"true\"\n            role=\"listitem\"\n            aria-label=\"Drag ").concat(field.label, " to canvas\"\n            tabindex=\"0\"\n        >\n            <span class=\"form-builder-palette-tile__icon\" aria-hidden=\"true\">").concat(field.icon, "</span>\n            <span class=\"form-builder-palette-tile__label\">").concat(field.label, "</span>\n        </div>\n    ");
+    var _FIELD_DESCRIPTIONS$f;
+
+    var description = (_FIELD_DESCRIPTIONS$f = FIELD_DESCRIPTIONS[field.type]) !== null && _FIELD_DESCRIPTIONS$f !== void 0 ? _FIELD_DESCRIPTIONS$f : 'Form field';
+    return "\n        <div\n            class=\"form-builder-palette-tile\"\n            data-field-type=\"".concat(field.type, "\"\n            draggable=\"true\"\n            role=\"listitem\"\n            aria-label=\"Drag ").concat(field.label, " to canvas\"\n            tabindex=\"0\"\n        >\n            <span class=\"form-builder-palette-tile__icon\" aria-hidden=\"true\">").concat(field.icon, "</span>\n            <div class=\"form-builder-palette-tile__text\">\n                <span class=\"form-builder-palette-tile__label\">").concat(field.label, "</span>\n                <span class=\"form-builder-palette-tile__description\">").concat(description, "</span>\n            </div>\n        </div>\n    ");
   }).join('');
 }
 

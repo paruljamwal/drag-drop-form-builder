@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 
 @push('styles')
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="{{ asset('css/form-builder.css') }}" rel="stylesheet">
 @endpush
 
@@ -11,14 +14,16 @@
 @section('content')
 <div class="app-content form-builder-app-content">
     <div class="side-app form-builder-side-app">
-        <div class="form-builder flex min-h-[calc(100vh-180px)] flex-col bg-gray-100">
+        <div class="form-builder form-builder-shell">
             <x-form-builder.field-templates />
             <x-form-builder.header :submission-url="url('/forms/submit')" />
 
-            <main class="flex flex-1 flex-col gap-6 p-6 lg:flex-row">
-                <x-form-builder.canvas />
+            <div class="form-builder-workspace">
+                <div class="form-builder-workspace__main">
+                    <x-form-builder.canvas />
+                </div>
                 <x-form-builder.palette />
-            </main>
+            </div>
 
             <x-form-builder.footer />
         </div>

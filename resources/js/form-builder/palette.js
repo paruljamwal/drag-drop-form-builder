@@ -1,5 +1,27 @@
 import { FIELD_TYPES } from './constants';
 
+/** Short descriptions for palette tiles (display only). */
+const FIELD_DESCRIPTIONS = {
+    text: 'Single-line answer',
+    textarea: 'Multi-line text',
+    number: 'Numeric input',
+    email: 'Email address',
+    phone: 'Phone number',
+    select: 'Pick one option',
+    radio: 'Single choice list',
+    checkbox: 'Multiple choices',
+    date: 'Calendar date',
+    file: 'Upload a file',
+    title: 'Section heading',
+    description: 'Helper text block',
+    newline: 'Vertical spacing',
+    page_break: 'Split into pages',
+    hidden: 'Hidden value field',
+    state: 'US state selector',
+    city: 'City selector',
+    state_city: 'State and city pair',
+};
+
 export function initPalette() {
     const root = document.getElementById('form-builder-palette');
 
@@ -18,7 +40,10 @@ function renderFieldTiles(root) {
         return;
     }
 
-    grid.innerHTML = FIELD_TYPES.map((field) => `
+    grid.innerHTML = FIELD_TYPES.map((field) => {
+        const description = FIELD_DESCRIPTIONS[field.type] ?? 'Form field';
+
+        return `
         <div
             class="form-builder-palette-tile"
             data-field-type="${field.type}"
@@ -28,9 +53,13 @@ function renderFieldTiles(root) {
             tabindex="0"
         >
             <span class="form-builder-palette-tile__icon" aria-hidden="true">${field.icon}</span>
-            <span class="form-builder-palette-tile__label">${field.label}</span>
+            <div class="form-builder-palette-tile__text">
+                <span class="form-builder-palette-tile__label">${field.label}</span>
+                <span class="form-builder-palette-tile__description">${description}</span>
+            </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function initSubTabs(root) {

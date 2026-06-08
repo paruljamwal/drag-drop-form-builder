@@ -3,37 +3,35 @@
     'defaultTitle' => 'Untitled Form',
 ])
 
-<header class="border-b border-gray-200 bg-white">
-    <div class="px-6 py-5">
-        <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <div class="min-w-0 flex-1">
-                <label for="form-builder-title" class="sr-only">Form title</label>
-                <input
-                    type="text"
-                    id="form-builder-title"
-                    name="form_title"
-                    value="{{ $defaultTitle }}"
-                    maxlength="200"
-                    placeholder="Enter form title"
-                    class="w-full border-0 bg-transparent px-0 text-2xl font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0"
-                >
-                <p class="mt-2 text-sm text-gray-500">
-                    <span class="font-medium text-gray-600">Form submission URL:</span>
-                    <span id="form-builder-submission-url" class="break-all">{{ $submissionUrl }}</span>
-                </p>
-            </div>
-            <p
-                id="form-builder-char-count"
-                class="mt-2 shrink-0 text-sm text-gray-500 sm:mt-0"
-                aria-live="polite"
+<header class="form-builder-header">
+    <div class="form-builder-header__top">
+        <div class="form-builder-header__title-block">
+            <label for="form-builder-title" class="form-builder-header__eyebrow">Form name</label>
+            <input
+                type="text"
+                id="form-builder-title"
+                name="form_title"
+                value="{{ $defaultTitle }}"
+                maxlength="200"
+                placeholder="Untitled form"
+                class="form-builder-header__title-input"
             >
-                {{ strlen($defaultTitle) }} / 200
-            </p>
+            <div class="form-builder-header__url-row">
+                <span class="form-builder-header__url-label">Submission URL</span>
+                <code id="form-builder-submission-url" class="form-builder-header__url-value">{{ $submissionUrl }}</code>
+            </div>
         </div>
+        <p
+            id="form-builder-char-count"
+            class="form-builder-header__char-count"
+            aria-live="polite"
+        >
+            {{ strlen($defaultTitle) }} / 200
+        </p>
     </div>
 
-    <nav class="flex items-center justify-between border-t border-gray-100 px-6" aria-label="Form builder sections">
-        <div class="flex">
+    <nav class="form-builder-header__nav" aria-label="Form builder sections">
+        <div class="form-builder-header__tabs">
             <button
                 type="button"
                 class="form-builder-tab form-builder-tab--active"
@@ -55,6 +53,10 @@
             class="form-builder-preview-toggle"
             aria-pressed="false"
         >
+            <svg class="form-builder-preview-toggle__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                <circle cx="12" cy="12" r="3" />
+            </svg>
             Preview
         </button>
     </nav>

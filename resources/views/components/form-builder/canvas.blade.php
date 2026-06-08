@@ -1,26 +1,31 @@
 <section
     id="form-builder-canvas"
-    class="form-builder-canvas flex min-h-[420px] flex-1 flex-col rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 transition-colors"
+    class="form-builder-canvas"
     aria-label="Form canvas"
 >
-    <div
-        id="form-builder-canvas-empty"
-        class="flex flex-1 flex-col items-center justify-center px-6 py-12 text-center"
-    >
-        <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-gray-200">
-            <svg class="h-7 w-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
+    <div class="form-builder-canvas__surface">
+        <div
+            id="form-builder-canvas-empty"
+            class="form-builder-canvas__empty"
+        >
+            <div class="form-builder-canvas__empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="8" y="6" width="32" height="36" rx="4" />
+                    <path stroke-linecap="round" d="M16 16h16M16 24h10M16 32h14" />
+                    <circle cx="34" cy="34" r="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5" />
+                    <path stroke-linecap="round" stroke="#4F46E5" d="M34 31v6M31 34h6" />
+                </svg>
+            </div>
+            <h2 class="form-builder-canvas__empty-title">Build your form here</h2>
+            <p class="form-builder-canvas__empty-text">
+                Drag a field from the panel on the right and drop it into this canvas.
+            </p>
         </div>
-        <h2 class="text-base font-semibold text-gray-900">Drag fields here</h2>
-        <p class="mt-1 max-w-sm text-sm text-gray-500">
-            Drop form fields from the palette on the right to start building your form.
-        </p>
-    </div>
 
-    <div
-        id="form-builder-canvas-fields"
-        class="hidden flex-1 space-y-3 p-4"
-        role="list"
-    ></div>
+        <div
+            id="form-builder-canvas-fields"
+            class="form-builder-canvas__fields hidden"
+            role="list"
+        ></div>
+    </div>
 </section>
