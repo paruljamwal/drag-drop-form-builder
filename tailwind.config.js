@@ -4,6 +4,7 @@ module.exports = {
     content: [
         './resources/views/form.blade.php',
         './resources/views/components/form-builder/**/*.blade.php',
+        './resources/js/form-builder/**/*.js',
     ],
     theme: {
         extend: {

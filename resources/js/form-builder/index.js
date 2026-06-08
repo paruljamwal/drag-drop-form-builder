@@ -1,4 +1,11 @@
+import { initPalette } from './palette';
+
 document.addEventListener('DOMContentLoaded', () => {
+    initTitleCounter();
+    initPalette();
+});
+
+function initTitleCounter() {
     const titleInput = document.getElementById('form-builder-title');
     const charCount = document.getElementById('form-builder-char-count');
 
@@ -23,4 +30,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     titleInput.addEventListener('input', updateCharCount);
     updateCharCount();
-});
+}
