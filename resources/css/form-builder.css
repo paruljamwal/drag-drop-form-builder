@@ -53,12 +53,34 @@
         @apply overflow-hidden rounded-lg border-2 border-indigo-200 bg-white shadow-sm ring-1 ring-indigo-100;
     }
 
+    .form-builder-field-card--selected {
+        @apply border-indigo-500 ring-2 ring-indigo-200;
+    }
+
     .form-builder-field-card__header {
-        @apply border-b border-indigo-100 bg-indigo-50/60 px-4 py-2;
+        @apply flex items-center justify-between gap-3 border-b border-indigo-100 bg-indigo-50/60 px-3 py-2;
     }
 
     .form-builder-field-card__type {
-        @apply text-xs font-semibold uppercase tracking-wide text-indigo-600;
+        @apply min-w-0 truncate text-xs font-semibold uppercase tracking-wide text-indigo-600;
+    }
+
+    .form-builder-field-card__actions {
+        @apply flex shrink-0 items-center gap-0.5;
+    }
+
+    .form-builder-field-action {
+        @apply inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors;
+        @apply hover:bg-white hover:text-indigo-600;
+        @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1;
+    }
+
+    .form-builder-field-action--move {
+        @apply cursor-grab text-gray-400 hover:text-gray-600;
+    }
+
+    .form-builder-field-action--danger {
+        @apply hover:bg-red-50 hover:text-red-600;
     }
 
     .form-builder-field-card__body {

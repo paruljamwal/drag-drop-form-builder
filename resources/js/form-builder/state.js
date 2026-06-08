@@ -1,10 +1,16 @@
-import { createDefaultField } from './constants';
+import { createDefaultField, generateFieldId } from './constants';
 
 /** @type {import('./constants').FormField[]} */
 let fields = [];
 
+/** @type {string|null} */
+let selectedFieldId = null;
+
 /** @type {Set<(fields: import('./constants').FormField[]) => void>} */
-const listeners = new Set();
+const fieldListeners = new Set();
+
+/** @type {Set<(selectedId: string|null) => void>} */
+const selectionListeners = new Set();
 
 /**
  * @returns {import('./constants').FormField[]}
@@ -14,25 +20,109 @@ export function getFields() {
 }
 
 /**
+ * @returns {string|null}
+ */
+export function getSelectedFieldId() {
+    return selectedFieldId;
+}
+
+/**
+ * @returns {import('./constants').FormField|null}
+ */
+export function getSelectedField() {
+    return fields.find((field) => field.id === selectedFieldId) ?? null;
+}
+
+/**
  * @param {string} type
  * @returns {import('./constants').FormField}
  */
 export function addField(type) {
     const field = createDefaultField(type);
     fields = [...fields, field];
-    notify();
+    notifyFields();
     return field;
+}
+
+/**
+ * @param {string} id
+ */
+export function removeField(id) {
+    fields = fields.filter((field) => field.id !== id);
+
+    if (selectedFieldId === id) {
+        selectedFieldId = null;
+        notifySelection();
+    }
+
+    notifyFields();
+}
+
+/**
+ * @param {string} id
+ * @returns {import('./constants').FormField|null}
+ */
+export function duplicateField(id) {
+    const index = fields.findIndex((field) => field.id === id);
+
+    if (index === -1) {
+        return null;
+    }
+
+    const source = fields[index];
+    const copy = {
+        ...source,
+        id: generateFieldId(),
+        options: [...source.options],
+    };
+
+    fields = [
+        ...fields.slice(0, index + 1),
+        copy,
+        ...fields.slice(index + 1),
+    ];
+
+    selectedFieldId = copy.id;
+    notifyFields();
+    notifySelection();
+
+    return copy;
+}
+
+/**
+ * @param {string} id
+ */
+export function selectField(id) {
+    if (!fields.some((field) => field.id === id)) {
+        return;
+    }
+
+    selectedFieldId = id;
+    notifySelection();
 }
 
 /**
  * @param {(fields: import('./constants').FormField[]) => void} listener
  */
 export function onFieldsChange(listener) {
-    listeners.add(listener);
+    fieldListeners.add(listener);
 
-    return () => listeners.delete(listener);
+    return () => fieldListeners.delete(listener);
 }
 
-function notify() {
-    listeners.forEach((listener) => listener(getFields()));
+/**
+ * @param {(selectedId: string|null) => void} listener
+ */
+export function onSelectionChange(listener) {
+    selectionListeners.add(listener);
+
+    return () => selectionListeners.delete(listener);
+}
+
+function notifyFields() {
+    fieldListeners.forEach((listener) => listener(getFields()));
+}
+
+function notifySelection() {
+    selectionListeners.forEach((listener) => listener(selectedFieldId));
 }

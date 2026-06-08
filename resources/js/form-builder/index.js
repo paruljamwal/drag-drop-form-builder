@@ -1,12 +1,16 @@
 import { initPalette } from './palette';
 import { initCanvas } from './canvas';
 import { initDragDrop } from './drag-drop';
+import { initFieldActions } from './field-actions';
+import { initFieldOptionsPanel } from './field-options';
 
 document.addEventListener('DOMContentLoaded', () => {
     initTitleCounter();
     initPalette();
     initCanvas();
     initDragDrop();
+    initFieldActions();
+    initFieldOptionsPanel();
 });
 
 function initTitleCounter() {

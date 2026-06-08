@@ -35,23 +35,40 @@ function renderFieldTiles(root) {
 
 function initSubTabs(root) {
     const tabs = root.querySelectorAll('[data-palette-tab]');
-    const panels = root.querySelectorAll('[data-palette-panel]');
 
     tabs.forEach((tab) => {
         tab.addEventListener('click', () => {
             const target = tab.getAttribute('data-palette-tab');
 
-            tabs.forEach((item) => {
-                const isActive = item.getAttribute('data-palette-tab') === target;
-                item.classList.toggle('form-builder-subtab--active', isActive);
-                item.classList.toggle('form-builder-subtab--inactive', !isActive);
-                item.setAttribute('aria-selected', isActive ? 'true' : 'false');
-            });
-
-            panels.forEach((panel) => {
-                const isVisible = panel.getAttribute('data-palette-panel') === target;
-                panel.classList.toggle('hidden', !isVisible);
-            });
+            if (target) {
+                switchPaletteTab(target);
+            }
         });
+    });
+}
+
+/**
+ * @param {string} tabId
+ */
+export function switchPaletteTab(tabId) {
+    const root = document.getElementById('form-builder-palette');
+
+    if (!root) {
+        return;
+    }
+
+    const tabs = root.querySelectorAll('[data-palette-tab]');
+    const panels = root.querySelectorAll('[data-palette-panel]');
+
+    tabs.forEach((item) => {
+        const isActive = item.getAttribute('data-palette-tab') === tabId;
+        item.classList.toggle('form-builder-subtab--active', isActive);
+        item.classList.toggle('form-builder-subtab--inactive', !isActive);
+        item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    panels.forEach((panel) => {
+        const isVisible = panel.getAttribute('data-palette-panel') === tabId;
+        panel.classList.toggle('hidden', !isVisible);
     });
 }

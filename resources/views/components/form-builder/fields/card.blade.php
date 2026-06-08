@@ -10,6 +10,7 @@
 >
     <header class="form-builder-field-card__header">
         <span class="form-builder-field-card__type" data-fb-part="type-label">{{ $typeLabel }}</span>
+        <x-form-builder.fields.card-actions />
     </header>
     <div class="form-builder-field-card__body" data-fb-slot="body">
         {{ $slot }}
