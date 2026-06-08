@@ -9,7 +9,7 @@ export function initFieldActions() {
         return;
     }
 
-    fieldsList.addEventListener('click', (event) => {
+    fieldsList.addEventListener('click', async (event) => {
         const actionButton = event.target.closest('[data-fb-action]');
 
         if (!actionButton) {
@@ -32,7 +32,7 @@ export function initFieldActions() {
             case 'delete': {
                 const field = getFields().find((item) => item.id === fieldId);
 
-                if (confirmDeleteField(field?.label)) {
+                if (await confirmDeleteField({ label: field?.label, type: field?.type })) {
                     removeField(fieldId);
                 }
                 break;

@@ -29,5 +29,6 @@
         </div>
     </div>
     <x-form-builder.schema-modal />
+    <x-form-builder.delete-field-modal />
 </div>
 @endsection

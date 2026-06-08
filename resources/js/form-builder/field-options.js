@@ -235,7 +235,7 @@ function bindFormEvents(form) {
 
         if (removeElementButton) {
             event.preventDefault();
-            handleRemoveElement();
+            void handleRemoveElement();
         }
     });
 }
@@ -316,14 +316,14 @@ function handleRemoveOption(form, index) {
     renderOptionsList(form, { ...field, options });
 }
 
-function handleRemoveElement() {
+async function handleRemoveElement() {
     const field = getSelectedField();
 
     if (!field) {
         return;
     }
 
-    if (!confirmDeleteField(field.label)) {
+    if (!(await confirmDeleteField({ label: field.label, type: field.type }))) {
         return;
     }
 

@@ -7,8 +7,10 @@ import { initFieldReorder } from './field-reorder';
 import { initSchemaOutput } from './schema-output';
 import { initPersistence } from './persistence';
 import { initPreviewMode } from './preview-mode';
+import { initDeleteModal } from './confirm';
 
 document.addEventListener('DOMContentLoaded', () => {
+    initDeleteModal();
     initPersistence();
     initTitleCounter();
     initPalette();
