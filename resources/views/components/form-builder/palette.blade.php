@@ -39,6 +39,7 @@
             class="hidden p-4"
             data-palette-panel="field-options"
         >
+        
             <div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center">
                 <p class="text-sm font-medium text-gray-700">No field selected</p>
                 <p class="mt-1 text-xs text-gray-500">
