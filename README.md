@@ -1,64 +1,260 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Drag & Drop Form Builder
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel 8 form builder assignment that lets users compose forms visually using drag-and-drop, configure field options, reorder fields, and export a JSON schema for backend integration.
 
-## About Laravel 
+**Live entry point:** `/` (Form Builder)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Project Setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Prerequisites
 
-## Learning Laravel
+- PHP **7.3+** or **8.x**
+- Composer
+- Node.js **16+** and npm
+- MySQL is optional for this assignment (the builder runs without database persistence)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+# 1. Clone the repository
+git clone https://github.com/paruljamwal/drag-drop-form-builder.git
+cd drag-drop-form-builder
 
-## Laravel Sponsors
+# 2. Install PHP dependencies
+composer install
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+# 3. Environment file
+cp .env.example .env
+php artisan key:generate
 
-### Premium Partners
+# 4. Install frontend dependencies
+npm install
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+# 5. Build assets
+npm run dev
+```
 
-## Contributing
+For production assets:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+npm run prod
+```
 
-## Code of Conduct
+During development, you can watch for changes:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+npm run watch
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## How to Run
+
+Start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+Open the form builder in your browser:
+
+```
+http://127.0.0.1:8000
+```
+
+If you change Blade, CSS, or JavaScript source files, rebuild assets with `npm run dev` (or use `npm run watch`).
+
+---
+
+## Drag-and-Drop Approach
+
+**Library choice:** Native **HTML5 Drag and Drop API** (no SortableJS, react-dnd, or similar).
+
+**Rationale:**
+
+- The assignment scope is a focused builder UI; native DnD is sufficient for palette → canvas drops and in-canvas reordering.
+- Avoids an extra dependency and keeps the bundle small.
+- Works well with server-rendered Blade templates and vanilla JavaScript modules.
+- Custom MIME types separate concerns:
+  - `application/x-form-builder-field` — adding fields from the palette
+  - `application/x-form-builder-reorder` — reordering existing canvas fields
+
+Palette tiles are drag sources; the canvas is a drop target with visual drag-over feedback. Field reordering uses the move handle on each card with before/after drop indicators.
+
+---
+
+## Assumptions
+
+- The builder is a **frontend-only** workflow for this assignment; form submission URL is displayed and included in JSON but not posted to a backend endpoint.
+- **18 field types** appear in the palette; **8 core types** have live canvas previews (text, textarea, number, email, phone, select, radio, checkbox). Remaining types show a placeholder preview but can still be added and configured.
+- Form state is stored in **browser `localStorage`** (`form-builder-draft`), not in the database.
+- The existing LMS admin layout (sidebar, fixed header) is reused; form builder styles account for the fixed header offset.
+- **Settings** tab and **Cancel** button are present in the UI as placeholders without full workflow implementation.
+- Tailwind CSS is scoped to `.form-builder` to avoid conflicts with the existing Bootstrap-based admin theme.
+
+---
+
+## Features Completed
+
+| Step | Feature |
+|------|---------|
+| 1 | Form builder layout — header, canvas, palette, footer |
+| 2 | Field palette with 18 field types in a 2-column grid |
+| 3 | Drag-and-drop from palette to canvas with unique field IDs |
+| 4 | Blade field preview components cloned from `<template>` markup |
+| 5 | Field card actions — move, edit, duplicate, delete |
+| 6 | Field options panel — label, placeholder, validation, options, CSS class, required, remove |
+| 7 | Canvas field reordering via move handle |
+| 8 | JSON schema output via **Next** button (modal + `console.log`) |
+| 9 | Polish — localStorage persistence, delete confirmation, preview mode, drag-over styling |
+
+### Field options supported
+
+- Label, placeholder, default value, required flag, CSS class
+- Min/max length (text-based fields)
+- Options list (select, radio, checkbox)
+- Remove element
+
+### JSON schema shape
+
+- **Form level:** `title`, `submissionUrl`
+- **Field level:** `id`, `type`, `label`, `placeholder`, `required`, `cssClass`, `defaultValue`, `minLength`, `maxLength`, `options`, `order`
+
+---
+
+## Bonus Features Completed
+
+- **localStorage persistence** — draft restored on page reload
+- **Delete confirmation** — confirm dialog before removing a field
+- **Preview mode** — toggle hides palette and field toolbars for a clean form view
+- **Drag-over feedback** — blue border on canvas while dragging from palette
+- **Copy JSON** — clipboard icon on schema modal with footer copy action
+
+---
+
+## Sample JSON Output
+
+Click **Next** in the footer to open the schema modal. Example output:
+
+```json
+{
+  "title": "Contact Form",
+  "submissionUrl": "http://127.0.0.1:8000/forms/submit",
+  "fields": [
+    {
+      "id": "field_1717843200000_1",
+      "type": "text",
+      "label": "Full Name",
+      "placeholder": "Enter your name",
+      "required": true,
+      "cssClass": "",
+      "defaultValue": "",
+      "minLength": 2,
+      "maxLength": 100,
+      "options": [],
+      "order": 0
+    },
+    {
+      "id": "field_1717843200000_2",
+      "type": "email",
+      "label": "Email Address",
+      "placeholder": "you@example.com",
+      "required": true,
+      "cssClass": "",
+      "defaultValue": "",
+      "minLength": null,
+      "maxLength": null,
+      "options": [],
+      "order": 1
+    },
+    {
+      "id": "field_1717843200000_3",
+      "type": "select",
+      "label": "Department",
+      "placeholder": "Choose one",
+      "required": false,
+      "cssClass": "",
+      "defaultValue": "",
+      "minLength": null,
+      "maxLength": null,
+      "options": [
+        "Sales",
+        "Support",
+        "Engineering"
+      ],
+      "order": 2
+    }
+  ]
+}
+```
+
+---
+
+## Project Structure
+
+```
+├── app/Http/Controllers/GuestController.php   # Serves the form builder page
+├── routes/web.php                             # GET / → form builder
+├── resources/
+│   ├── views/
+│   │   ├── form.blade.php                     # Main form builder page
+│   │   ├── layouts/admin.blade.php            # LMS admin shell
+│   │   └── components/form-builder/           # Blade UI components
+│   │       ├── header.blade.php               # Title, tabs, preview toggle
+│   │       ├── canvas.blade.php                 # Drop zone + field list
+│   │       ├── palette.blade.php                # Field type palette
+│   │       ├── footer.blade.php                 # Cancel / Next actions
+│   │       ├── schema-modal.blade.php           # JSON output modal
+│   │       ├── field-options-form.blade.php     # Field configuration panel
+│   │       ├── field-templates.blade.php        # <template> previews for JS
+│   │       └── fields/                          # Per-type preview fragments
+│   ├── js/form-builder/                       # Vanilla JS modules
+│   │   ├── index.js                           # Bootstrap all modules
+│   │   ├── constants.js                       # Field types + defaults
+│   │   ├── state.js                           # Fields array + CRUD/reorder
+│   │   ├── drag-drop.js                       # Palette → canvas DnD
+│   │   ├── field-reorder.js                   # In-canvas reorder DnD
+│   │   ├── canvas.js                          # Render field cards
+│   │   ├── field-preview.js                   # Clone Blade templates
+│   │   ├── field-actions.js                   # Edit, duplicate, delete
+│   │   ├── field-options.js                   # Options panel binding
+│   │   ├── field-config.js                    # Type-aware option visibility
+│   │   ├── schema.js / schema-output.js       # JSON serialization + modal
+│   │   ├── storage.js / persistence.js        # localStorage draft
+│   │   ├── preview-mode.js                    # Preview toggle
+│   │   └── confirm.js                         # Delete confirmation
+│   └── css/form-builder.css                   # Tailwind entry (scoped)
+├── public/css/form-builder.css                # Compiled CSS
+├── public/js/form-builder.js                  # Compiled JS bundle
+├── tailwind.config.js                         # Tailwind (important: .form-builder)
+└── webpack.mix.js                             # Laravel Mix build config
+```
+
+### Architecture overview
+
+```
+Blade (server templates)  →  <template> HTML fragments
+        ↓
+Vanilla JS modules        →  state, DnD, render, serialize
+        ↓
+Tailwind CSS              →  scoped under .form-builder
+```
+
+State lives in a single in-memory `fields` array (`state.js`). UI modules subscribe to changes and re-render the canvas or options panel. On **Next**, the current state is serialized to JSON and shown in a modal.
+
+---
+
+## Tech Stack
+
+- **Backend:** Laravel 8, Blade
+- **Frontend:** Vanilla JavaScript (ES modules via Laravel Mix), Tailwind CSS 3
+- **Build:** Laravel Mix, PostCSS, Autoprefixer
+- **DnD:** HTML5 Drag and Drop API
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project extends a Laravel application scaffold and is provided for assignment/evaluation purposes.
