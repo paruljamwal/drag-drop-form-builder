@@ -19,15 +19,17 @@ function renderFieldTiles(root) {
     }
 
     grid.innerHTML = FIELD_TYPES.map((field) => `
-        <button
-            type="button"
+        <div
             class="form-builder-palette-tile"
             data-field-type="${field.type}"
-            aria-label="Add ${field.label}"
+            draggable="true"
+            role="listitem"
+            aria-label="Drag ${field.label} to canvas"
+            tabindex="0"
         >
             <span class="form-builder-palette-tile__icon" aria-hidden="true">${field.icon}</span>
             <span class="form-builder-palette-tile__label">${field.label}</span>
-        </button>
+        </div>
     `).join('');
 }
 

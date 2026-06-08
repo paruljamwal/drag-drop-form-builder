@@ -1,8 +1,12 @@
 import { initPalette } from './palette';
+import { initCanvas } from './canvas';
+import { initDragDrop } from './drag-drop';
 
 document.addEventListener('DOMContentLoaded', () => {
     initTitleCounter();
     initPalette();
+    initCanvas();
+    initDragDrop();
 });
 
 function initTitleCounter() {

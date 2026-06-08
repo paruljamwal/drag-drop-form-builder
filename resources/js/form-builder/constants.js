@@ -1,5 +1,37 @@
 /**
+ * @typedef {Object} FieldTypeMeta
+ * @property {string} type
+ * @property {string} label
+ * @property {string} icon
+ */
+
+/**
+ * @typedef {Object} FormField
+ * @property {string} id
+ * @property {string} type
+ * @property {string} label
+ * @property {string} placeholder
+ * @property {boolean} required
+ * @property {string[]} options
+ */
+
+/** @type {readonly string[]} */
+export const PREVIEW_FIELD_TYPES = [
+    'text',
+    'textarea',
+    'number',
+    'email',
+    'phone',
+    'select',
+    'radio',
+    'checkbox',
+];
+
+let fieldIdCounter = 0;
+
+/**
  * Single source of truth for all form builder field types.
+ * @type {FieldTypeMeta[]}
  */
 export const FIELD_TYPES = [
     { type: 'text', label: 'Text Input', icon: 'T' },
@@ -21,3 +53,43 @@ export const FIELD_TYPES = [
     { type: 'city', label: 'City', icon: '🏙' },
     { type: 'state_city', label: 'State & City Combined', icon: '📍' },
 ];
+
+/**
+ * @param {string} type
+ * @returns {FieldTypeMeta | undefined}
+ */
+export function getFieldTypeMeta(type) {
+    return FIELD_TYPES.find((field) => field.type === type);
+}
+
+/**
+ * @returns {string}
+ */
+export function generateFieldId() {
+    fieldIdCounter += 1;
+    return `field_${Date.now()}_${fieldIdCounter}`;
+}
+
+/**
+ * @param {string} type
+ * @returns {FormField}
+ */
+export function createDefaultField(type) {
+    const meta = getFieldTypeMeta(type);
+
+    /** @type {FormField} */
+    const field = {
+        id: generateFieldId(),
+        type,
+        label: meta?.label ?? 'Field',
+        placeholder: '',
+        required: false,
+        options: [],
+    };
+
+    if (['select', 'radio', 'checkbox'].includes(type)) {
+        field.options = ['Option 1', 'Option 2'];
+    }
+
+    return field;
+}
