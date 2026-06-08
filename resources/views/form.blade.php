@@ -9,8 +9,8 @@
 @endpush
 
 @section('content')
-<div class="app-content">
-    <div class="side-app !p-0">
+<div class="app-content form-builder-app-content">
+    <div class="side-app form-builder-side-app">
         <div class="form-builder flex min-h-[calc(100vh-180px)] flex-col bg-gray-100">
             <x-form-builder.field-templates />
             <x-form-builder.header :submission-url="url('/forms/submit')" />
@@ -21,8 +21,8 @@
             </main>
 
             <x-form-builder.footer />
-            <x-form-builder.schema-modal />
         </div>
     </div>
+    <x-form-builder.schema-modal />
 </div>
 @endsection
