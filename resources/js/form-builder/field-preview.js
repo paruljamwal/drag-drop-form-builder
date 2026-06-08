@@ -113,11 +113,37 @@ function hydrateInput(root, field) {
         return;
     }
 
+    applyInputClasses(input, field.cssClass);
+
     if ('placeholder' in input) {
         input.placeholder = field.placeholder || '';
     }
 
     input.value = field.value || '';
+
+    if (field.minLength != null) {
+        input.minLength = field.minLength;
+    } else {
+        input.removeAttribute('minlength');
+    }
+
+    if (field.maxLength != null) {
+        input.maxLength = field.maxLength;
+    } else {
+        input.removeAttribute('maxlength');
+    }
+}
+
+/**
+ * @param {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement} input
+ * @param {string} cssClass
+ */
+function applyInputClasses(input, cssClass) {
+    const baseClass = input.classList.contains('min-h-[80px]')
+        ? 'form-builder-preview-input min-h-[80px] resize-none'
+        : 'form-builder-preview-input';
+
+    input.className = cssClass ? `${baseClass} ${cssClass}`.trim() : baseClass;
 }
 
 /**
@@ -131,6 +157,7 @@ function hydrateSelectOptions(root, field) {
         return;
     }
 
+    applyInputClasses(select, field.cssClass);
     select.querySelectorAll('option:not([value=""])').forEach((option) => option.remove());
 
     field.options.forEach((optionValue) => {

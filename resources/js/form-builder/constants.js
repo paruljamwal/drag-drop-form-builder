@@ -12,6 +12,9 @@
  * @property {string} label
  * @property {string} placeholder
  * @property {string} value
+ * @property {number|null} minLength
+ * @property {number|null} maxLength
+ * @property {string} cssClass
  * @property {boolean} required
  * @property {string[]} options
  */
@@ -85,6 +88,9 @@ export function createDefaultField(type) {
         label: meta?.label ?? 'Field',
         placeholder: '',
         value: '',
+        minLength: null,
+        maxLength: null,
+        cssClass: '',
         required: false,
         options: [],
     };

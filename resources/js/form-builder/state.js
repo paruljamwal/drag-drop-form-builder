@@ -91,6 +91,33 @@ export function duplicateField(id) {
 
 /**
  * @param {string} id
+ * @param {Partial<import('./constants').FormField>} updates
+ * @returns {import('./constants').FormField|null}
+ */
+export function updateField(id, updates) {
+    const index = fields.findIndex((field) => field.id === id);
+
+    if (index === -1) {
+        return null;
+    }
+
+    const updated = {
+        ...fields[index],
+        ...updates,
+    };
+
+    if (updates.options) {
+        updated.options = [...updates.options];
+    }
+
+    fields = fields.map((field) => (field.id === id ? updated : field));
+    notifyFields();
+
+    return updated;
+}
+
+/**
+ * @param {string} id
  */
 export function selectField(id) {
     if (!fields.some((field) => field.id === id)) {

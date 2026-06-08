@@ -50,14 +50,7 @@
             </div>
 
             <div id="form-builder-field-options-content" class="hidden">
-                <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Editing field</p>
-                    <p id="form-builder-field-options-label" class="mt-1 text-sm font-semibold text-gray-900"></p>
-                    <p id="form-builder-field-options-type" class="mt-0.5 text-xs text-gray-500"></p>
-                </div>
-                <p class="mt-3 text-xs text-gray-500">
-                    Full field options editor will be available in the next step.
-                </p>
+                <x-form-builder.field-options-form />
             </div>
         </div>
     </div>

@@ -97,6 +97,9 @@ __webpack_require__.r(__webpack_exports__);
  * @property {string} label
  * @property {string} placeholder
  * @property {string} value
+ * @property {number|null} minLength
+ * @property {number|null} maxLength
+ * @property {string} cssClass
  * @property {boolean} required
  * @property {string[]} options
  */
@@ -217,6 +220,9 @@ function createDefaultField(type) {
     label: (_meta$label = meta === null || meta === void 0 ? void 0 : meta.label) !== null && _meta$label !== void 0 ? _meta$label : 'Field',
     placeholder: '',
     value: '',
+    minLength: null,
+    maxLength: null,
+    cssClass: '',
     required: false,
     options: []
   };
@@ -374,6 +380,73 @@ function initFieldActions() {
 
 /***/ }),
 
+/***/ "./resources/js/form-builder/field-config.js":
+/*!***************************************************!*\
+  !*** ./resources/js/form-builder/field-config.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CONFIG_CSS_CLASS": () => (/* binding */ CONFIG_CSS_CLASS),
+/* harmony export */   "CONFIG_DEFAULT_VALUE": () => (/* binding */ CONFIG_DEFAULT_VALUE),
+/* harmony export */   "CONFIG_LABEL": () => (/* binding */ CONFIG_LABEL),
+/* harmony export */   "CONFIG_MIN_MAX_LENGTH": () => (/* binding */ CONFIG_MIN_MAX_LENGTH),
+/* harmony export */   "CONFIG_OPTIONS": () => (/* binding */ CONFIG_OPTIONS),
+/* harmony export */   "CONFIG_PLACEHOLDER": () => (/* binding */ CONFIG_PLACEHOLDER),
+/* harmony export */   "CONFIG_REQUIRED": () => (/* binding */ CONFIG_REQUIRED),
+/* harmony export */   "getVisibleConfig": () => (/* binding */ getVisibleConfig),
+/* harmony export */   "isConfigAllowed": () => (/* binding */ isConfigAllowed)
+/* harmony export */ });
+/** @type {readonly string[]} */
+var CONFIG_LABEL = ['*'];
+/** @type {readonly string[]} */
+
+var CONFIG_PLACEHOLDER = ['text', 'textarea', 'number', 'email', 'phone'];
+/** @type {readonly string[]} */
+
+var CONFIG_MIN_MAX_LENGTH = ['text', 'textarea'];
+/** @type {readonly string[]} */
+
+var CONFIG_OPTIONS = ['select', 'radio', 'checkbox'];
+/** @type {readonly string[]} */
+
+var CONFIG_REQUIRED = ['*'];
+/** @type {readonly string[]} */
+
+var CONFIG_CSS_CLASS = ['*'];
+/** @type {readonly string[]} */
+
+var CONFIG_DEFAULT_VALUE = ['text', 'number', 'email', 'hidden'];
+/**
+ * @param {readonly string[]} allowedTypes
+ * @param {string} fieldType
+ * @returns {boolean}
+ */
+
+function isConfigAllowed(allowedTypes, fieldType) {
+  return allowedTypes.includes('*') || allowedTypes.includes(fieldType);
+}
+/**
+ * @param {string} fieldType
+ * @returns {Record<string, boolean>}
+ */
+
+function getVisibleConfig(fieldType) {
+  return {
+    label: isConfigAllowed(CONFIG_LABEL, fieldType),
+    placeholder: isConfigAllowed(CONFIG_PLACEHOLDER, fieldType),
+    minMaxLength: isConfigAllowed(CONFIG_MIN_MAX_LENGTH, fieldType),
+    options: isConfigAllowed(CONFIG_OPTIONS, fieldType),
+    required: isConfigAllowed(CONFIG_REQUIRED, fieldType),
+    cssClass: isConfigAllowed(CONFIG_CSS_CLASS, fieldType),
+    defaultValue: isConfigAllowed(CONFIG_DEFAULT_VALUE, fieldType),
+    removeElement: true
+  };
+}
+
+/***/ }),
+
 /***/ "./resources/js/form-builder/field-options.js":
 /*!****************************************************!*\
   !*** ./resources/js/form-builder/field-options.js ***!
@@ -385,39 +458,403 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "initFieldOptionsPanel": () => (/* binding */ initFieldOptionsPanel)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./resources/js/form-builder/constants.js");
-/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
+/* harmony import */ var _field_config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./field-config */ "./resources/js/form-builder/field-config.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
+/* harmony import */ var _palette__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./palette */ "./resources/js/form-builder/palette.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 
+
+
+
+/** @type {boolean} */
+
+var isBindingForm = false;
 function initFieldOptionsPanel() {
   var emptyState = document.getElementById('form-builder-field-options-empty');
   var content = document.getElementById('form-builder-field-options-content');
-  var labelEl = document.getElementById('form-builder-field-options-label');
-  var typeEl = document.getElementById('form-builder-field-options-type');
+  var form = document.getElementById('form-builder-field-options-form');
 
-  if (!emptyState || !content || !labelEl || !typeEl) {
+  if (!emptyState || !content || !form) {
     return;
   }
 
-  var render = function render() {
-    var _meta$label;
+  bindFormEvents(form);
+  (0,_state__WEBPACK_IMPORTED_MODULE_2__.onSelectionChange)(function () {
+    renderPanel(emptyState, content, form);
+  });
+  renderPanel(emptyState, content, form);
+}
+/**
+ * @param {HTMLElement} emptyState
+ * @param {HTMLElement} content
+ * @param {HTMLFormElement} form
+ */
 
-    var field = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getSelectedField)();
+function renderPanel(emptyState, content, form) {
+  var _meta$label;
 
-    if (!field) {
-      emptyState.classList.remove('hidden');
-      content.classList.add('hidden');
+  var field = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedField)();
+
+  if (!field) {
+    emptyState.classList.remove('hidden');
+    content.classList.add('hidden');
+    return;
+  }
+
+  var meta = (0,_constants__WEBPACK_IMPORTED_MODULE_0__.getFieldTypeMeta)(field.type);
+  var visibility = (0,_field_config__WEBPACK_IMPORTED_MODULE_1__.getVisibleConfig)(field.type);
+  emptyState.classList.add('hidden');
+  content.classList.remove('hidden');
+  isBindingForm = true;
+  bindFormValues(form, field, (_meta$label = meta === null || meta === void 0 ? void 0 : meta.label) !== null && _meta$label !== void 0 ? _meta$label : field.type);
+  applyConfigVisibility(form, visibility);
+  renderOptionsList(form, field);
+  isBindingForm = false;
+}
+/**
+ * @param {HTMLFormElement} form
+ * @param {import('./constants').FormField} field
+ * @param {string} typeLabel
+ */
+
+
+function bindFormValues(form, field, typeLabel) {
+  var typeEl = form.querySelector('#form-builder-field-options-type');
+  var labelInput = form.querySelector('#fb-config-label');
+  var placeholderInput = form.querySelector('#fb-config-placeholder');
+  var minLengthInput = form.querySelector('#fb-config-min-length');
+  var maxLengthInput = form.querySelector('#fb-config-max-length');
+  var requiredInput = form.querySelector('#fb-config-required');
+  var cssClassInput = form.querySelector('#fb-config-css-class');
+  var defaultValueInput = form.querySelector('#fb-config-default-value');
+
+  if (typeEl) {
+    typeEl.textContent = typeLabel;
+  }
+
+  if (labelInput instanceof HTMLInputElement) {
+    labelInput.value = field.label;
+  }
+
+  if (placeholderInput instanceof HTMLInputElement) {
+    placeholderInput.value = field.placeholder;
+  }
+
+  if (minLengthInput instanceof HTMLInputElement) {
+    var _field$minLength;
+
+    minLengthInput.value = (_field$minLength = field.minLength) !== null && _field$minLength !== void 0 ? _field$minLength : '';
+  }
+
+  if (maxLengthInput instanceof HTMLInputElement) {
+    var _field$maxLength;
+
+    maxLengthInput.value = (_field$maxLength = field.maxLength) !== null && _field$maxLength !== void 0 ? _field$maxLength : '';
+  }
+
+  if (requiredInput instanceof HTMLInputElement) {
+    requiredInput.checked = field.required;
+  }
+
+  if (cssClassInput instanceof HTMLInputElement) {
+    cssClassInput.value = field.cssClass;
+  }
+
+  if (defaultValueInput instanceof HTMLInputElement) {
+    defaultValueInput.value = field.value;
+  }
+}
+/**
+ * @param {HTMLFormElement} form
+ * @param {Record<string, boolean>} visibility
+ */
+
+
+function applyConfigVisibility(form, visibility) {
+  form.querySelectorAll('[data-fb-config-group]').forEach(function (group) {
+    if (!(group instanceof HTMLElement)) {
       return;
     }
 
-    var meta = (0,_constants__WEBPACK_IMPORTED_MODULE_0__.getFieldTypeMeta)(field.type);
-    emptyState.classList.add('hidden');
-    content.classList.remove('hidden');
-    labelEl.textContent = field.label;
-    typeEl.textContent = (_meta$label = meta === null || meta === void 0 ? void 0 : meta.label) !== null && _meta$label !== void 0 ? _meta$label : field.type;
-  };
+    var key = group.getAttribute('data-fb-config-group');
+    var isVisible = key ? visibility[key] : false;
+    group.classList.toggle('hidden', !isVisible);
+  });
+}
+/**
+ * @param {HTMLFormElement} form
+ * @param {import('./constants').FormField} field
+ */
 
-  (0,_state__WEBPACK_IMPORTED_MODULE_1__.onSelectionChange)(render);
-  render();
+
+function renderOptionsList(form, field) {
+  var list = form.querySelector('#fb-config-options-list');
+
+  if (!(list instanceof HTMLElement)) {
+    return;
+  }
+
+  list.replaceChildren();
+  field.options.forEach(function (option, index) {
+    list.appendChild(createOptionRow(option, index, field.options.length));
+  });
+}
+/**
+ * @param {string} value
+ * @param {number} index
+ * @param {number} total
+ * @returns {HTMLElement}
+ */
+
+
+function createOptionRow(value, index, total) {
+  var row = document.createElement('div');
+  row.className = 'flex items-center gap-2';
+  row.dataset.fbOptionIndex = String(index);
+  row.innerHTML = "\n        <input\n            type=\"text\"\n            class=\"form-builder-option-input flex-1\"\n            data-fb-option-input\n            value=\"".concat(escapeAttribute(value), "\"\n            placeholder=\"Option ").concat(index + 1, "\"\n            autocomplete=\"off\"\n        >\n        <button\n            type=\"button\"\n            class=\"form-builder-option-icon-btn\"\n            data-fb-remove-option\n            title=\"Remove option\"\n            aria-label=\"Remove option\"\n            ").concat(total <= 1 ? 'disabled' : '', "\n        >\n            <svg class=\"h-4 w-4\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\">\n                <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 18L18 6M6 6l12 12\" />\n            </svg>\n        </button>\n    ");
+  return row;
+}
+/**
+ * @param {HTMLFormElement} form
+ */
+
+
+function bindFormEvents(form) {
+  form.addEventListener('input', function (event) {
+    if (isBindingForm) {
+      return;
+    }
+
+    var target = event.target;
+
+    if (!(target instanceof HTMLInputElement)) {
+      return;
+    }
+
+    if (target.hasAttribute('data-fb-option-input')) {
+      handleOptionInput(target);
+      return;
+    }
+
+    handleFieldInput(target);
+  });
+  form.addEventListener('change', function (event) {
+    if (isBindingForm) {
+      return;
+    }
+
+    var target = event.target;
+
+    if (target instanceof HTMLInputElement && target.id === 'fb-config-required') {
+      commitFieldUpdate({
+        required: target.checked
+      });
+    }
+  });
+  form.addEventListener('click', function (event) {
+    var addButton = event.target.closest('#fb-config-add-option');
+    var removeButton = event.target.closest('[data-fb-remove-option]');
+    var removeElementButton = event.target.closest('#fb-config-remove-element');
+
+    if (addButton) {
+      event.preventDefault();
+      handleAddOption(form);
+      return;
+    }
+
+    if (removeButton) {
+      event.preventDefault();
+      var row = removeButton.closest('[data-fb-option-index]');
+
+      if (row instanceof HTMLElement) {
+        handleRemoveOption(form, Number(row.dataset.fbOptionIndex));
+      }
+
+      return;
+    }
+
+    if (removeElementButton) {
+      event.preventDefault();
+      handleRemoveElement();
+    }
+  });
+}
+/**
+ * @param {HTMLInputElement} input
+ */
+
+
+function handleFieldInput(input) {
+  switch (input.id) {
+    case 'fb-config-label':
+      commitFieldUpdate({
+        label: input.value
+      });
+      break;
+
+    case 'fb-config-placeholder':
+      commitFieldUpdate({
+        placeholder: input.value
+      });
+      break;
+
+    case 'fb-config-min-length':
+      commitFieldUpdate({
+        minLength: parseOptionalNumber(input.value)
+      });
+      break;
+
+    case 'fb-config-max-length':
+      commitFieldUpdate({
+        maxLength: parseOptionalNumber(input.value)
+      });
+      break;
+
+    case 'fb-config-css-class':
+      commitFieldUpdate({
+        cssClass: input.value.trim()
+      });
+      break;
+
+    case 'fb-config-default-value':
+      commitFieldUpdate({
+        value: input.value
+      });
+      break;
+
+    default:
+      break;
+  }
+}
+/**
+ * @param {HTMLInputElement} input
+ */
+
+
+function handleOptionInput(input) {
+  var row = input.closest('[data-fb-option-index]');
+  var field = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedField)();
+
+  if (!field || !(row instanceof HTMLElement)) {
+    return;
+  }
+
+  var index = Number(row.dataset.fbOptionIndex);
+
+  var options = _toConsumableArray(field.options);
+
+  options[index] = input.value;
+  commitFieldUpdate({
+    options: options
+  });
+}
+/**
+ * @param {HTMLFormElement} form
+ */
+
+
+function handleAddOption(form) {
+  var field = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedField)();
+
+  if (!field) {
+    return;
+  }
+
+  var options = [].concat(_toConsumableArray(field.options), ["Option ".concat(field.options.length + 1)]);
+  commitFieldUpdate({
+    options: options
+  });
+  renderOptionsList(form, _objectSpread(_objectSpread({}, field), {}, {
+    options: options
+  }));
+}
+/**
+ * @param {HTMLFormElement} form
+ * @param {number} index
+ */
+
+
+function handleRemoveOption(form, index) {
+  var field = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedField)();
+
+  if (!field || field.options.length <= 1) {
+    return;
+  }
+
+  var options = field.options.filter(function (_, optionIndex) {
+    return optionIndex !== index;
+  });
+  commitFieldUpdate({
+    options: options
+  });
+  renderOptionsList(form, _objectSpread(_objectSpread({}, field), {}, {
+    options: options
+  }));
+}
+
+function handleRemoveElement() {
+  var fieldId = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedFieldId)();
+
+  if (!fieldId) {
+    return;
+  }
+
+  (0,_state__WEBPACK_IMPORTED_MODULE_2__.removeField)(fieldId);
+  (0,_palette__WEBPACK_IMPORTED_MODULE_3__.switchPaletteTab)('add-fields');
+}
+/**
+ * @param {Partial<import('./constants').FormField>} updates
+ */
+
+
+function commitFieldUpdate(updates) {
+  var fieldId = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedFieldId)();
+
+  if (!fieldId) {
+    return;
+  }
+
+  (0,_state__WEBPACK_IMPORTED_MODULE_2__.updateField)(fieldId, updates);
+}
+/**
+ * @param {string} value
+ * @returns {number|null}
+ */
+
+
+function parseOptionalNumber(value) {
+  if (value === '' || value === null) {
+    return null;
+  }
+
+  var parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+/**
+ * @param {string} value
+ * @returns {string}
+ */
+
+
+function escapeAttribute(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
 
 /***/ }),
@@ -557,11 +994,35 @@ function hydrateInput(root, field) {
     return;
   }
 
+  applyInputClasses(input, field.cssClass);
+
   if ('placeholder' in input) {
     input.placeholder = field.placeholder || '';
   }
 
   input.value = field.value || '';
+
+  if (field.minLength != null) {
+    input.minLength = field.minLength;
+  } else {
+    input.removeAttribute('minlength');
+  }
+
+  if (field.maxLength != null) {
+    input.maxLength = field.maxLength;
+  } else {
+    input.removeAttribute('maxlength');
+  }
+}
+/**
+ * @param {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement} input
+ * @param {string} cssClass
+ */
+
+
+function applyInputClasses(input, cssClass) {
+  var baseClass = input.classList.contains('min-h-[80px]') ? 'form-builder-preview-input min-h-[80px] resize-none' : 'form-builder-preview-input';
+  input.className = cssClass ? "".concat(baseClass, " ").concat(cssClass).trim() : baseClass;
 }
 /**
  * @param {HTMLElement} root
@@ -576,6 +1037,7 @@ function hydrateSelectOptions(root, field) {
     return;
   }
 
+  applyInputClasses(select, field.cssClass);
   select.querySelectorAll('option:not([value=""])').forEach(function (option) {
     return option.remove();
   });
@@ -733,7 +1195,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "onFieldsChange": () => (/* binding */ onFieldsChange),
 /* harmony export */   "onSelectionChange": () => (/* binding */ onSelectionChange),
 /* harmony export */   "removeField": () => (/* binding */ removeField),
-/* harmony export */   "selectField": () => (/* binding */ selectField)
+/* harmony export */   "selectField": () => (/* binding */ selectField),
+/* harmony export */   "updateField": () => (/* binding */ updateField)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./resources/js/form-builder/constants.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
@@ -845,6 +1308,33 @@ function duplicateField(id) {
   notifyFields();
   notifySelection();
   return copy;
+}
+/**
+ * @param {string} id
+ * @param {Partial<import('./constants').FormField>} updates
+ * @returns {import('./constants').FormField|null}
+ */
+
+function updateField(id, updates) {
+  var index = fields.findIndex(function (field) {
+    return field.id === id;
+  });
+
+  if (index === -1) {
+    return null;
+  }
+
+  var updated = _objectSpread(_objectSpread({}, fields[index]), updates);
+
+  if (updates.options) {
+    updated.options = _toConsumableArray(updates.options);
+  }
+
+  fields = fields.map(function (field) {
+    return field.id === id ? updated : field;
+  });
+  notifyFields();
+  return updated;
 }
 /**
  * @param {string} id
