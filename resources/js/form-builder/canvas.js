@@ -1,4 +1,4 @@
-import { getSelectedFieldId, onFieldsChange, onSelectionChange } from './state';
+import { getFields, getSelectedFieldId, onFieldsChange, onSelectionChange } from './state';
 import { renderFieldCardElement } from './field-preview';
 
 export function initCanvas() {
@@ -22,6 +22,7 @@ export function initCanvas() {
 
     onFieldsChange(renderFields);
     onSelectionChange(() => highlightSelectedField(fieldsList));
+    renderFields(getFields());
 }
 
 /**

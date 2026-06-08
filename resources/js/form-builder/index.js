@@ -5,8 +5,11 @@ import { initFieldActions } from './field-actions';
 import { initFieldOptionsPanel } from './field-options';
 import { initFieldReorder } from './field-reorder';
 import { initSchemaOutput } from './schema-output';
+import { initPersistence } from './persistence';
+import { initPreviewMode } from './preview-mode';
 
 document.addEventListener('DOMContentLoaded', () => {
+    initPersistence();
     initTitleCounter();
     initPalette();
     initCanvas();
@@ -15,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFieldOptionsPanel();
     initFieldReorder();
     initSchemaOutput();
+    initPreviewMode();
 });
 
 function initTitleCounter() {

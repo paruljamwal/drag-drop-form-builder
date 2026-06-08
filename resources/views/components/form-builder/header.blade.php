@@ -32,20 +32,30 @@
         </div>
     </div>
 
-    <nav class="border-t border-gray-100 px-6" aria-label="Form builder sections">
+    <nav class="flex items-center justify-between border-t border-gray-100 px-6" aria-label="Form builder sections">
+        <div class="flex">
+            <button
+                type="button"
+                class="form-builder-tab form-builder-tab--active"
+                aria-current="page"
+            >
+                Form Editor
+            </button>
+            <button
+                type="button"
+                class="form-builder-tab form-builder-tab--inactive"
+                disabled
+            >
+                Settings
+            </button>
+        </div>
         <button
             type="button"
-            class="form-builder-tab form-builder-tab--active"
-            aria-current="page"
+            id="form-builder-preview-toggle"
+            class="form-builder-preview-toggle"
+            aria-pressed="false"
         >
-            Form Editor
-        </button>
-        <button
-            type="button"
-            class="form-builder-tab form-builder-tab--inactive"
-            disabled
-        >
-            Settings
+            Preview
         </button>
     </nav>
 </header>

@@ -175,6 +175,24 @@ export function selectField(id) {
 }
 
 /**
+ * @param {import('./constants').FormField[]} nextFields
+ * @param {string|null} [nextSelectedId]
+ */
+export function hydrateState(nextFields, nextSelectedId = null) {
+    fields = nextFields.map((field) => ({
+        ...field,
+        options: [...field.options],
+    }));
+
+    selectedFieldId = nextSelectedId && fields.some((field) => field.id === nextSelectedId)
+        ? nextSelectedId
+        : null;
+
+    notifyFields();
+    notifySelection();
+}
+
+/**
  * @param {(fields: import('./constants').FormField[]) => void} listener
  */
 export function onFieldsChange(listener) {

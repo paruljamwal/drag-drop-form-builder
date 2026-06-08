@@ -50,7 +50,7 @@
     }
 
     .form-builder .form-builder-canvas--drag-over {
-        @apply border-indigo-400 bg-indigo-50/50;
+        @apply border-blue-500 bg-blue-50/50 ring-2 ring-blue-200;
     }
 
     .form-builder .form-builder-field-card {
@@ -171,5 +171,30 @@
 
     .form-builder .form-builder-schema-modal__btn--secondary {
         @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+    }
+
+    .form-builder .form-builder-preview-toggle {
+        @apply rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-50;
+    }
+
+    .form-builder.form-builder--preview .form-builder-preview-toggle {
+        @apply border-indigo-300 bg-indigo-50 text-indigo-700;
+    }
+
+    .form-builder.form-builder--preview #form-builder-palette {
+        @apply hidden;
+    }
+
+    .form-builder.form-builder--preview .form-builder-field-card__header,
+    .form-builder.form-builder--preview #form-builder-canvas-empty {
+        @apply hidden;
+    }
+
+    .form-builder.form-builder--preview .form-builder-field-card {
+        @apply border-gray-200 ring-0;
+    }
+
+    .form-builder.form-builder--preview #form-builder-title {
+        @apply pointer-events-none;
     }
 }

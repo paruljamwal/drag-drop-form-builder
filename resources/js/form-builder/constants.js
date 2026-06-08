@@ -75,6 +75,23 @@ export function generateFieldId() {
 }
 
 /**
+ * @param {import('./constants').FormField[]} loadedFields
+ */
+export function syncFieldIdCounter(loadedFields) {
+    let maxCounter = 0;
+
+    loadedFields.forEach((field) => {
+        const match = field.id.match(/_(\d+)$/);
+
+        if (match) {
+            maxCounter = Math.max(maxCounter, Number(match[1]));
+        }
+    });
+
+    fieldIdCounter = maxCounter;
+}
+
+/**
  * @param {string} type
  * @returns {FormField}
  */

@@ -1,4 +1,5 @@
-import { duplicateField, removeField, selectField } from './state';
+import { confirmDeleteField } from './confirm';
+import { duplicateField, getFields, removeField, selectField } from './state';
 import { switchPaletteTab } from './palette';
 
 export function initFieldActions() {
@@ -28,9 +29,14 @@ export function initFieldActions() {
         const action = actionButton.getAttribute('data-fb-action');
 
         switch (action) {
-            case 'delete':
-                removeField(fieldId);
+            case 'delete': {
+                const field = getFields().find((item) => item.id === fieldId);
+
+                if (confirmDeleteField(field?.label)) {
+                    removeField(fieldId);
+                }
                 break;
+            }
             case 'duplicate':
                 duplicateField(fieldId);
                 break;

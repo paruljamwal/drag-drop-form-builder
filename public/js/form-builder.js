@@ -51,6 +51,7 @@ function initCanvas() {
   (0,_state__WEBPACK_IMPORTED_MODULE_0__.onSelectionChange)(function () {
     return highlightSelectedField(fieldsList);
   });
+  renderFields((0,_state__WEBPACK_IMPORTED_MODULE_0__.getFields)());
 }
 /**
  * @param {HTMLElement} fieldsList
@@ -69,6 +70,27 @@ function highlightSelectedField(fieldsList) {
 
 /***/ }),
 
+/***/ "./resources/js/form-builder/confirm.js":
+/*!**********************************************!*\
+  !*** ./resources/js/form-builder/confirm.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "confirmDeleteField": () => (/* binding */ confirmDeleteField)
+/* harmony export */ });
+/**
+ * @param {string} [label]
+ * @returns {boolean}
+ */
+function confirmDeleteField(label) {
+  var name = (label === null || label === void 0 ? void 0 : label.trim()) || 'this field';
+  return window.confirm("Delete \"".concat(name, "\"? This cannot be undone."));
+}
+
+/***/ }),
+
 /***/ "./resources/js/form-builder/constants.js":
 /*!************************************************!*\
   !*** ./resources/js/form-builder/constants.js ***!
@@ -81,7 +103,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "PREVIEW_FIELD_TYPES": () => (/* binding */ PREVIEW_FIELD_TYPES),
 /* harmony export */   "createDefaultField": () => (/* binding */ createDefaultField),
 /* harmony export */   "generateFieldId": () => (/* binding */ generateFieldId),
-/* harmony export */   "getFieldTypeMeta": () => (/* binding */ getFieldTypeMeta)
+/* harmony export */   "getFieldTypeMeta": () => (/* binding */ getFieldTypeMeta),
+/* harmony export */   "syncFieldIdCounter": () => (/* binding */ syncFieldIdCounter)
 /* harmony export */ });
 /**
  * @typedef {Object} FieldTypeMeta
@@ -202,6 +225,21 @@ function getFieldTypeMeta(type) {
 function generateFieldId() {
   fieldIdCounter += 1;
   return "field_".concat(Date.now(), "_").concat(fieldIdCounter);
+}
+/**
+ * @param {import('./constants').FormField[]} loadedFields
+ */
+
+function syncFieldIdCounter(loadedFields) {
+  var maxCounter = 0;
+  loadedFields.forEach(function (field) {
+    var match = field.id.match(/_(\d+)$/);
+
+    if (match) {
+      maxCounter = Math.max(maxCounter, Number(match[1]));
+    }
+  });
+  fieldIdCounter = maxCounter;
 }
 /**
  * @param {string} type
@@ -338,8 +376,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "initFieldActions": () => (/* binding */ initFieldActions)
 /* harmony export */ });
-/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
-/* harmony import */ var _palette__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./palette */ "./resources/js/form-builder/palette.js");
+/* harmony import */ var _confirm__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./confirm */ "./resources/js/form-builder/confirm.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
+/* harmony import */ var _palette__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./palette */ "./resources/js/form-builder/palette.js");
+
 
 
 function initFieldActions() {
@@ -369,16 +409,25 @@ function initFieldActions() {
 
     switch (action) {
       case 'delete':
-        (0,_state__WEBPACK_IMPORTED_MODULE_0__.removeField)(fieldId);
-        break;
+        {
+          var field = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getFields)().find(function (item) {
+            return item.id === fieldId;
+          });
+
+          if ((0,_confirm__WEBPACK_IMPORTED_MODULE_0__.confirmDeleteField)(field === null || field === void 0 ? void 0 : field.label)) {
+            (0,_state__WEBPACK_IMPORTED_MODULE_1__.removeField)(fieldId);
+          }
+
+          break;
+        }
 
       case 'duplicate':
-        (0,_state__WEBPACK_IMPORTED_MODULE_0__.duplicateField)(fieldId);
+        (0,_state__WEBPACK_IMPORTED_MODULE_1__.duplicateField)(fieldId);
         break;
 
       case 'edit':
-        (0,_state__WEBPACK_IMPORTED_MODULE_0__.selectField)(fieldId);
-        (0,_palette__WEBPACK_IMPORTED_MODULE_1__.switchPaletteTab)('field-options');
+        (0,_state__WEBPACK_IMPORTED_MODULE_1__.selectField)(fieldId);
+        (0,_palette__WEBPACK_IMPORTED_MODULE_2__.switchPaletteTab)('field-options');
         break;
 
       case 'move':
@@ -467,10 +516,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "initFieldOptionsPanel": () => (/* binding */ initFieldOptionsPanel)
 /* harmony export */ });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./resources/js/form-builder/constants.js");
-/* harmony import */ var _field_config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./field-config */ "./resources/js/form-builder/field-config.js");
-/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
-/* harmony import */ var _palette__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./palette */ "./resources/js/form-builder/palette.js");
+/* harmony import */ var _confirm__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./confirm */ "./resources/js/form-builder/confirm.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "./resources/js/form-builder/constants.js");
+/* harmony import */ var _field_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./field-config */ "./resources/js/form-builder/field-config.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
+/* harmony import */ var _palette__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./palette */ "./resources/js/form-builder/palette.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -493,6 +543,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 
 
+
 /** @type {boolean} */
 
 var isBindingForm = false;
@@ -506,7 +557,7 @@ function initFieldOptionsPanel() {
   }
 
   bindFormEvents(form);
-  (0,_state__WEBPACK_IMPORTED_MODULE_2__.onSelectionChange)(function () {
+  (0,_state__WEBPACK_IMPORTED_MODULE_3__.onSelectionChange)(function () {
     renderPanel(emptyState, content, form);
   });
   renderPanel(emptyState, content, form);
@@ -520,7 +571,7 @@ function initFieldOptionsPanel() {
 function renderPanel(emptyState, content, form) {
   var _meta$label;
 
-  var field = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedField)();
+  var field = (0,_state__WEBPACK_IMPORTED_MODULE_3__.getSelectedField)();
 
   if (!field) {
     emptyState.classList.remove('hidden');
@@ -528,8 +579,8 @@ function renderPanel(emptyState, content, form) {
     return;
   }
 
-  var meta = (0,_constants__WEBPACK_IMPORTED_MODULE_0__.getFieldTypeMeta)(field.type);
-  var visibility = (0,_field_config__WEBPACK_IMPORTED_MODULE_1__.getVisibleConfig)(field.type);
+  var meta = (0,_constants__WEBPACK_IMPORTED_MODULE_1__.getFieldTypeMeta)(field.type);
+  var visibility = (0,_field_config__WEBPACK_IMPORTED_MODULE_2__.getVisibleConfig)(field.type);
   emptyState.classList.add('hidden');
   content.classList.remove('hidden');
   isBindingForm = true;
@@ -760,7 +811,7 @@ function handleFieldInput(input) {
 
 function handleOptionInput(input) {
   var row = input.closest('[data-fb-option-index]');
-  var field = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedField)();
+  var field = (0,_state__WEBPACK_IMPORTED_MODULE_3__.getSelectedField)();
 
   if (!field || !(row instanceof HTMLElement)) {
     return;
@@ -781,7 +832,7 @@ function handleOptionInput(input) {
 
 
 function handleAddOption(form) {
-  var field = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedField)();
+  var field = (0,_state__WEBPACK_IMPORTED_MODULE_3__.getSelectedField)();
 
   if (!field) {
     return;
@@ -802,7 +853,7 @@ function handleAddOption(form) {
 
 
 function handleRemoveOption(form, index) {
-  var field = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedField)();
+  var field = (0,_state__WEBPACK_IMPORTED_MODULE_3__.getSelectedField)();
 
   if (!field || field.options.length <= 1) {
     return;
@@ -820,14 +871,18 @@ function handleRemoveOption(form, index) {
 }
 
 function handleRemoveElement() {
-  var fieldId = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedFieldId)();
+  var field = (0,_state__WEBPACK_IMPORTED_MODULE_3__.getSelectedField)();
 
-  if (!fieldId) {
+  if (!field) {
     return;
   }
 
-  (0,_state__WEBPACK_IMPORTED_MODULE_2__.removeField)(fieldId);
-  (0,_palette__WEBPACK_IMPORTED_MODULE_3__.switchPaletteTab)('add-fields');
+  if (!(0,_confirm__WEBPACK_IMPORTED_MODULE_0__.confirmDeleteField)(field.label)) {
+    return;
+  }
+
+  (0,_state__WEBPACK_IMPORTED_MODULE_3__.removeField)(field.id);
+  (0,_palette__WEBPACK_IMPORTED_MODULE_4__.switchPaletteTab)('add-fields');
 }
 /**
  * @param {Partial<import('./constants').FormField>} updates
@@ -835,13 +890,13 @@ function handleRemoveElement() {
 
 
 function commitFieldUpdate(updates) {
-  var fieldId = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedFieldId)();
+  var fieldId = (0,_state__WEBPACK_IMPORTED_MODULE_3__.getSelectedFieldId)();
 
   if (!fieldId) {
     return;
   }
 
-  (0,_state__WEBPACK_IMPORTED_MODULE_2__.updateField)(fieldId, updates);
+  (0,_state__WEBPACK_IMPORTED_MODULE_3__.updateField)(fieldId, updates);
 }
 /**
  * @param {string} value
@@ -1336,6 +1391,139 @@ function switchPaletteTab(tabId) {
 
 /***/ }),
 
+/***/ "./resources/js/form-builder/persistence.js":
+/*!**************************************************!*\
+  !*** ./resources/js/form-builder/persistence.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "initPersistence": () => (/* binding */ initPersistence),
+/* harmony export */   "persistDraft": () => (/* binding */ persistDraft)
+/* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./resources/js/form-builder/constants.js");
+/* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./storage */ "./resources/js/form-builder/storage.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
+
+
+
+var saveTimer = null;
+function initPersistence() {
+  restoreDraft();
+  (0,_state__WEBPACK_IMPORTED_MODULE_2__.onFieldsChange)(scheduleSave);
+  (0,_state__WEBPACK_IMPORTED_MODULE_2__.onSelectionChange)(scheduleSave);
+  var titleInput = document.getElementById('form-builder-title');
+  titleInput === null || titleInput === void 0 ? void 0 : titleInput.addEventListener('input', scheduleSave);
+}
+
+function restoreDraft() {
+  var _draft$selectedFieldI;
+
+  var draft = (0,_storage__WEBPACK_IMPORTED_MODULE_1__.loadFormDraft)();
+
+  if (!draft || !Array.isArray(draft.fields)) {
+    return;
+  }
+
+  var fields = draft.fields.map(normalizeField);
+  (0,_constants__WEBPACK_IMPORTED_MODULE_0__.syncFieldIdCounter)(fields);
+  (0,_state__WEBPACK_IMPORTED_MODULE_2__.hydrateState)(fields, (_draft$selectedFieldI = draft.selectedFieldId) !== null && _draft$selectedFieldI !== void 0 ? _draft$selectedFieldI : null);
+  var titleInput = document.getElementById('form-builder-title');
+
+  if (titleInput instanceof HTMLInputElement && typeof draft.title === 'string') {
+    titleInput.value = draft.title;
+    titleInput.dispatchEvent(new Event('input', {
+      bubbles: true
+    }));
+  }
+
+  if (draft.previewMode) {
+    var _document$querySelect;
+
+    (_document$querySelect = document.querySelector('.form-builder')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add('form-builder--preview');
+  }
+}
+
+function scheduleSave() {
+  window.clearTimeout(saveTimer);
+  saveTimer = window.setTimeout(persistDraft, 250);
+}
+
+function persistDraft() {
+  var _root$classList$conta;
+
+  var titleInput = document.getElementById('form-builder-title');
+  var root = document.querySelector('.form-builder');
+  (0,_storage__WEBPACK_IMPORTED_MODULE_1__.saveFormDraft)({
+    title: titleInput instanceof HTMLInputElement ? titleInput.value : '',
+    fields: (0,_state__WEBPACK_IMPORTED_MODULE_2__.getFields)(),
+    selectedFieldId: (0,_state__WEBPACK_IMPORTED_MODULE_2__.getSelectedFieldId)(),
+    previewMode: (_root$classList$conta = root === null || root === void 0 ? void 0 : root.classList.contains('form-builder--preview')) !== null && _root$classList$conta !== void 0 ? _root$classList$conta : false
+  });
+}
+/**
+ * @param {object} field
+ * @returns {import('./constants').FormField}
+ */
+
+
+function normalizeField(field) {
+  var _field$id, _field$type, _field$label, _field$placeholder, _field$value, _field$minLength, _field$maxLength, _field$cssClass;
+
+  return {
+    id: String((_field$id = field.id) !== null && _field$id !== void 0 ? _field$id : ''),
+    type: String((_field$type = field.type) !== null && _field$type !== void 0 ? _field$type : 'text'),
+    label: String((_field$label = field.label) !== null && _field$label !== void 0 ? _field$label : 'Field'),
+    placeholder: String((_field$placeholder = field.placeholder) !== null && _field$placeholder !== void 0 ? _field$placeholder : ''),
+    value: String((_field$value = field.value) !== null && _field$value !== void 0 ? _field$value : ''),
+    minLength: (_field$minLength = field.minLength) !== null && _field$minLength !== void 0 ? _field$minLength : null,
+    maxLength: (_field$maxLength = field.maxLength) !== null && _field$maxLength !== void 0 ? _field$maxLength : null,
+    cssClass: String((_field$cssClass = field.cssClass) !== null && _field$cssClass !== void 0 ? _field$cssClass : ''),
+    required: Boolean(field.required),
+    options: Array.isArray(field.options) ? field.options.map(String) : []
+  };
+}
+
+
+
+/***/ }),
+
+/***/ "./resources/js/form-builder/preview-mode.js":
+/*!***************************************************!*\
+  !*** ./resources/js/form-builder/preview-mode.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "initPreviewMode": () => (/* binding */ initPreviewMode)
+/* harmony export */ });
+/* harmony import */ var _persistence__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./persistence */ "./resources/js/form-builder/persistence.js");
+
+function initPreviewMode() {
+  var root = document.querySelector('.form-builder');
+  var toggle = document.getElementById('form-builder-preview-toggle');
+
+  if (!root || !toggle) {
+    return;
+  }
+
+  if (root.classList.contains('form-builder--preview')) {
+    toggle.textContent = 'Exit Preview';
+    toggle.setAttribute('aria-pressed', 'true');
+  }
+
+  toggle.addEventListener('click', function () {
+    var isPreview = root.classList.toggle('form-builder--preview');
+    toggle.textContent = isPreview ? 'Exit Preview' : 'Preview';
+    toggle.setAttribute('aria-pressed', isPreview ? 'true' : 'false');
+    (0,_persistence__WEBPACK_IMPORTED_MODULE_0__.persistDraft)();
+  });
+}
+
+/***/ }),
+
 /***/ "./resources/js/form-builder/schema-output.js":
 /*!****************************************************!*\
   !*** ./resources/js/form-builder/schema-output.js ***!
@@ -1559,6 +1747,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getFields": () => (/* binding */ getFields),
 /* harmony export */   "getSelectedField": () => (/* binding */ getSelectedField),
 /* harmony export */   "getSelectedFieldId": () => (/* binding */ getSelectedFieldId),
+/* harmony export */   "hydrateState": () => (/* binding */ hydrateState),
 /* harmony export */   "moveFieldToEnd": () => (/* binding */ moveFieldToEnd),
 /* harmony export */   "onFieldsChange": () => (/* binding */ onFieldsChange),
 /* harmony export */   "onSelectionChange": () => (/* binding */ onSelectionChange),
@@ -1787,6 +1976,24 @@ function selectField(id) {
   notifySelection();
 }
 /**
+ * @param {import('./constants').FormField[]} nextFields
+ * @param {string|null} [nextSelectedId]
+ */
+
+function hydrateState(nextFields) {
+  var nextSelectedId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  fields = nextFields.map(function (field) {
+    return _objectSpread(_objectSpread({}, field), {}, {
+      options: _toConsumableArray(field.options)
+    });
+  });
+  selectedFieldId = nextSelectedId && fields.some(function (field) {
+    return field.id === nextSelectedId;
+  }) ? nextSelectedId : null;
+  notifyFields();
+  notifySelection();
+}
+/**
  * @param {(fields: import('./constants').FormField[]) => void} listener
  */
 
@@ -1817,6 +2024,54 @@ function notifySelection() {
   selectionListeners.forEach(function (listener) {
     return listener(selectedFieldId);
   });
+}
+
+/***/ }),
+
+/***/ "./resources/js/form-builder/storage.js":
+/*!**********************************************!*\
+  !*** ./resources/js/form-builder/storage.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "clearFormDraft": () => (/* binding */ clearFormDraft),
+/* harmony export */   "loadFormDraft": () => (/* binding */ loadFormDraft),
+/* harmony export */   "saveFormDraft": () => (/* binding */ saveFormDraft)
+/* harmony export */ });
+var STORAGE_KEY = 'form-builder-draft';
+/**
+ * @param {unknown} snapshot
+ */
+
+function saveFormDraft(snapshot) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+  } catch (error) {
+    console.warn('Unable to save form builder draft:', error);
+  }
+}
+/**
+ * @returns {object|null}
+ */
+
+function loadFormDraft() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+
+    if (!raw) {
+      return null;
+    }
+
+    return JSON.parse(raw);
+  } catch (error) {
+    console.warn('Unable to load form builder draft:', error);
+    return null;
+  }
+}
+function clearFormDraft() {
+  localStorage.removeItem(STORAGE_KEY);
 }
 
 /***/ })
@@ -1891,6 +2146,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _field_options__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./field-options */ "./resources/js/form-builder/field-options.js");
 /* harmony import */ var _field_reorder__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./field-reorder */ "./resources/js/form-builder/field-reorder.js");
 /* harmony import */ var _schema_output__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./schema-output */ "./resources/js/form-builder/schema-output.js");
+/* harmony import */ var _persistence__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./persistence */ "./resources/js/form-builder/persistence.js");
+/* harmony import */ var _preview_mode__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./preview-mode */ "./resources/js/form-builder/preview-mode.js");
+
+
 
 
 
@@ -1899,6 +2158,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 document.addEventListener('DOMContentLoaded', function () {
+  (0,_persistence__WEBPACK_IMPORTED_MODULE_7__.initPersistence)();
   initTitleCounter();
   (0,_palette__WEBPACK_IMPORTED_MODULE_0__.initPalette)();
   (0,_canvas__WEBPACK_IMPORTED_MODULE_1__.initCanvas)();
@@ -1907,6 +2167,7 @@ document.addEventListener('DOMContentLoaded', function () {
   (0,_field_options__WEBPACK_IMPORTED_MODULE_4__.initFieldOptionsPanel)();
   (0,_field_reorder__WEBPACK_IMPORTED_MODULE_5__.initFieldReorder)();
   (0,_schema_output__WEBPACK_IMPORTED_MODULE_6__.initSchemaOutput)();
+  (0,_preview_mode__WEBPACK_IMPORTED_MODULE_8__.initPreviewMode)();
 });
 
 function initTitleCounter() {

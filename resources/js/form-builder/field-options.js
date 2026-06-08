@@ -1,3 +1,4 @@
+import { confirmDeleteField } from './confirm';
 import { getFieldTypeMeta } from './constants';
 import { getVisibleConfig } from './field-config';
 import {
@@ -316,13 +317,17 @@ function handleRemoveOption(form, index) {
 }
 
 function handleRemoveElement() {
-    const fieldId = getSelectedFieldId();
+    const field = getSelectedField();
 
-    if (!fieldId) {
+    if (!field) {
         return;
     }
 
-    removeField(fieldId);
+    if (!confirmDeleteField(field.label)) {
+        return;
+    }
+
+    removeField(field.id);
     switchPaletteTab('add-fields');
 }
 
