@@ -3,6 +3,7 @@
         type="button"
         class="form-builder-field-action form-builder-field-action--move"
         data-fb-action="move"
+        draggable="true"
         title="Move field"
         aria-label="Move field"
     >

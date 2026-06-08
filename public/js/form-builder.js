@@ -247,6 +247,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "initDragDrop": () => (/* binding */ initDragDrop)
 /* harmony export */ });
 /* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
+/* harmony import */ var _field_reorder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./field-reorder */ "./resources/js/form-builder/field-reorder.js");
+
 
 var DRAG_MIME = 'application/x-form-builder-field';
 function initDragDrop() {
@@ -288,6 +290,10 @@ function initCanvasDropTarget() {
   }
 
   canvas.addEventListener('dragover', function (event) {
+    if ((0,_field_reorder__WEBPACK_IMPORTED_MODULE_1__.isActiveReorderDrag)(event)) {
+      return;
+    }
+
     event.preventDefault();
 
     if (event.dataTransfer) {
@@ -304,14 +310,18 @@ function initCanvasDropTarget() {
   canvas.addEventListener('drop', function (event) {
     var _event$dataTransfer, _event$dataTransfer2;
 
-    event.preventDefault();
-    canvas.classList.remove('form-builder-canvas--drag-over');
-    var fieldType = ((_event$dataTransfer = event.dataTransfer) === null || _event$dataTransfer === void 0 ? void 0 : _event$dataTransfer.getData(DRAG_MIME)) || ((_event$dataTransfer2 = event.dataTransfer) === null || _event$dataTransfer2 === void 0 ? void 0 : _event$dataTransfer2.getData('text/plain'));
+    if ((_event$dataTransfer = event.dataTransfer) !== null && _event$dataTransfer !== void 0 && _event$dataTransfer.getData(_field_reorder__WEBPACK_IMPORTED_MODULE_1__.REORDER_MIME)) {
+      return;
+    }
+
+    var fieldType = (_event$dataTransfer2 = event.dataTransfer) === null || _event$dataTransfer2 === void 0 ? void 0 : _event$dataTransfer2.getData(DRAG_MIME);
 
     if (!fieldType) {
       return;
     }
 
+    event.preventDefault();
+    canvas.classList.remove('form-builder-canvas--drag-over');
     (0,_state__WEBPACK_IMPORTED_MODULE_0__.addField)(fieldType);
   });
 }
@@ -1103,6 +1113,153 @@ function hydrateUnsupported(root, field) {
 
 /***/ }),
 
+/***/ "./resources/js/form-builder/field-reorder.js":
+/*!****************************************************!*\
+  !*** ./resources/js/form-builder/field-reorder.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "REORDER_MIME": () => (/* binding */ REORDER_MIME),
+/* harmony export */   "initFieldReorder": () => (/* binding */ initFieldReorder),
+/* harmony export */   "isActiveReorderDrag": () => (/* binding */ isActiveReorderDrag)
+/* harmony export */ });
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./resources/js/form-builder/state.js");
+
+var REORDER_MIME = 'application/x-form-builder-reorder';
+/** @type {string|null} */
+
+var draggedFieldId = null;
+function initFieldReorder() {
+  var fieldsList = document.getElementById('form-builder-canvas-fields');
+
+  if (!fieldsList) {
+    return;
+  }
+
+  fieldsList.addEventListener('dragstart', function (event) {
+    var handle = event.target.closest('[data-fb-action="move"]');
+    var card = handle === null || handle === void 0 ? void 0 : handle.closest('[data-field-id]');
+
+    if (!handle || !card || !event.dataTransfer) {
+      return;
+    }
+
+    draggedFieldId = card.dataset.fieldId;
+    event.dataTransfer.setData(REORDER_MIME, draggedFieldId);
+    event.dataTransfer.effectAllowed = 'move';
+    card.classList.add('form-builder-field-card--dragging');
+  });
+  fieldsList.addEventListener('dragend', function (event) {
+    var card = event.target.closest('[data-field-id]');
+    card === null || card === void 0 ? void 0 : card.classList.remove('form-builder-field-card--dragging');
+    clearDropIndicators(fieldsList);
+    draggedFieldId = null;
+  });
+  fieldsList.addEventListener('dragover', function (event) {
+    if (!isReorderDrag(event)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+
+    clearDropIndicators(fieldsList);
+    var targetCard = event.target.closest('[data-field-id]');
+
+    if (!targetCard || targetCard.dataset.fieldId === draggedFieldId) {
+      fieldsList.classList.add('form-builder-canvas-fields--drop-end');
+      return;
+    }
+
+    var insertAfter = shouldInsertAfter(targetCard, event.clientY);
+    targetCard.classList.add(insertAfter ? 'form-builder-field-card--drop-after' : 'form-builder-field-card--drop-before');
+  });
+  fieldsList.addEventListener('dragleave', function (event) {
+    if (!fieldsList.contains(event.relatedTarget)) {
+      clearDropIndicators(fieldsList);
+    }
+  });
+  fieldsList.addEventListener('drop', function (event) {
+    var _event$dataTransfer;
+
+    var reorderId = (_event$dataTransfer = event.dataTransfer) === null || _event$dataTransfer === void 0 ? void 0 : _event$dataTransfer.getData(REORDER_MIME);
+
+    if (!reorderId) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    var targetCard = event.target.closest('[data-field-id]');
+    clearDropIndicators(fieldsList);
+
+    if (!targetCard || targetCard.dataset.fieldId === reorderId) {
+      (0,_state__WEBPACK_IMPORTED_MODULE_0__.moveFieldToEnd)(reorderId);
+      draggedFieldId = null;
+      return;
+    }
+
+    var insertAfter = shouldInsertAfter(targetCard, event.clientY);
+    (0,_state__WEBPACK_IMPORTED_MODULE_0__.reorderField)(reorderId, targetCard.dataset.fieldId, insertAfter);
+    draggedFieldId = null;
+  });
+}
+/**
+ * @param {DragEvent} event
+ * @returns {boolean}
+ */
+
+function isReorderDrag(event) {
+  var _event$dataTransfer$t, _event$dataTransfer2;
+
+  if (!draggedFieldId) {
+    return false;
+  }
+
+  return (_event$dataTransfer$t = (_event$dataTransfer2 = event.dataTransfer) === null || _event$dataTransfer2 === void 0 ? void 0 : _event$dataTransfer2.types.includes(REORDER_MIME)) !== null && _event$dataTransfer$t !== void 0 ? _event$dataTransfer$t : false;
+}
+/**
+ * @param {HTMLElement} targetCard
+ * @param {number} clientY
+ * @returns {boolean}
+ */
+
+
+function shouldInsertAfter(targetCard, clientY) {
+  var rect = targetCard.getBoundingClientRect();
+  return clientY > rect.top + rect.height / 2;
+}
+/**
+ * @param {HTMLElement} fieldsList
+ */
+
+
+function clearDropIndicators(fieldsList) {
+  fieldsList.classList.remove('form-builder-canvas-fields--drop-end');
+  fieldsList.querySelectorAll('.form-builder-field-card').forEach(function (card) {
+    card.classList.remove('form-builder-field-card--drop-before', 'form-builder-field-card--drop-after');
+  });
+}
+/**
+ * @param {DragEvent} event
+ * @returns {boolean}
+ */
+
+
+function isActiveReorderDrag(event) {
+  var _event$dataTransfer$t2, _event$dataTransfer3;
+
+  return (_event$dataTransfer$t2 = (_event$dataTransfer3 = event.dataTransfer) === null || _event$dataTransfer3 === void 0 ? void 0 : _event$dataTransfer3.types.includes(REORDER_MIME)) !== null && _event$dataTransfer$t2 !== void 0 ? _event$dataTransfer$t2 : false;
+}
+
+/***/ }),
+
 /***/ "./resources/js/form-builder/palette.js":
 /*!**********************************************!*\
   !*** ./resources/js/form-builder/palette.js ***!
@@ -1192,13 +1349,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getFields": () => (/* binding */ getFields),
 /* harmony export */   "getSelectedField": () => (/* binding */ getSelectedField),
 /* harmony export */   "getSelectedFieldId": () => (/* binding */ getSelectedFieldId),
+/* harmony export */   "moveFieldToEnd": () => (/* binding */ moveFieldToEnd),
 /* harmony export */   "onFieldsChange": () => (/* binding */ onFieldsChange),
 /* harmony export */   "onSelectionChange": () => (/* binding */ onSelectionChange),
 /* harmony export */   "removeField": () => (/* binding */ removeField),
+/* harmony export */   "reorderField": () => (/* binding */ reorderField),
 /* harmony export */   "selectField": () => (/* binding */ selectField),
 /* harmony export */   "updateField": () => (/* binding */ updateField)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./resources/js/form-builder/constants.js");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -1337,6 +1504,65 @@ function updateField(id, updates) {
   return updated;
 }
 /**
+ * @param {string} fieldId
+ * @param {string} targetFieldId
+ * @param {boolean} insertAfter
+ */
+
+function reorderField(fieldId, targetFieldId, insertAfter) {
+  var fromIndex = fields.findIndex(function (field) {
+    return field.id === fieldId;
+  });
+  var toIndex = fields.findIndex(function (field) {
+    return field.id === targetFieldId;
+  });
+
+  if (fromIndex === -1 || toIndex === -1 || fieldId === targetFieldId) {
+    return;
+  }
+
+  if (insertAfter) {
+    toIndex += 1;
+  }
+
+  var nextFields = _toConsumableArray(fields);
+
+  var _nextFields$splice = nextFields.splice(fromIndex, 1),
+      _nextFields$splice2 = _slicedToArray(_nextFields$splice, 1),
+      movedField = _nextFields$splice2[0];
+
+  if (fromIndex < toIndex) {
+    toIndex -= 1;
+  }
+
+  nextFields.splice(toIndex, 0, movedField);
+  fields = nextFields;
+  notifyFields();
+}
+/**
+ * @param {string} fieldId
+ */
+
+function moveFieldToEnd(fieldId) {
+  var fromIndex = fields.findIndex(function (field) {
+    return field.id === fieldId;
+  });
+
+  if (fromIndex === -1 || fromIndex === fields.length - 1) {
+    return;
+  }
+
+  var nextFields = _toConsumableArray(fields);
+
+  var _nextFields$splice3 = nextFields.splice(fromIndex, 1),
+      _nextFields$splice4 = _slicedToArray(_nextFields$splice3, 1),
+      movedField = _nextFields$splice4[0];
+
+  nextFields.push(movedField);
+  fields = nextFields;
+  notifyFields();
+}
+/**
  * @param {string} id
  */
 
@@ -1453,6 +1679,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _drag_drop__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./drag-drop */ "./resources/js/form-builder/drag-drop.js");
 /* harmony import */ var _field_actions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./field-actions */ "./resources/js/form-builder/field-actions.js");
 /* harmony import */ var _field_options__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./field-options */ "./resources/js/form-builder/field-options.js");
+/* harmony import */ var _field_reorder__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./field-reorder */ "./resources/js/form-builder/field-reorder.js");
+
 
 
 
@@ -1465,6 +1693,7 @@ document.addEventListener('DOMContentLoaded', function () {
   (0,_drag_drop__WEBPACK_IMPORTED_MODULE_2__.initDragDrop)();
   (0,_field_actions__WEBPACK_IMPORTED_MODULE_3__.initFieldActions)();
   (0,_field_options__WEBPACK_IMPORTED_MODULE_4__.initFieldOptionsPanel)();
+  (0,_field_reorder__WEBPACK_IMPORTED_MODULE_5__.initFieldReorder)();
 });
 
 function initTitleCounter() {

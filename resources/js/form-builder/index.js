@@ -3,6 +3,7 @@ import { initCanvas } from './canvas';
 import { initDragDrop } from './drag-drop';
 import { initFieldActions } from './field-actions';
 import { initFieldOptionsPanel } from './field-options';
+import { initFieldReorder } from './field-reorder';
 
 document.addEventListener('DOMContentLoaded', () => {
     initTitleCounter();
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initDragDrop();
     initFieldActions();
     initFieldOptionsPanel();
+    initFieldReorder();
 });
 
 function initTitleCounter() {

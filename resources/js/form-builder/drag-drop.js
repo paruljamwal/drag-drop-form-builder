@@ -1,4 +1,5 @@
 import { addField } from './state';
+import { isActiveReorderDrag, REORDER_MIME } from './field-reorder';
 
 const DRAG_MIME = 'application/x-form-builder-field';
 
@@ -43,6 +44,10 @@ function initCanvasDropTarget() {
     }
 
     canvas.addEventListener('dragover', (event) => {
+        if (isActiveReorderDrag(event)) {
+            return;
+        }
+
         event.preventDefault();
 
         if (event.dataTransfer) {
@@ -59,16 +64,18 @@ function initCanvasDropTarget() {
     });
 
     canvas.addEventListener('drop', (event) => {
-        event.preventDefault();
-        canvas.classList.remove('form-builder-canvas--drag-over');
+        if (event.dataTransfer?.getData(REORDER_MIME)) {
+            return;
+        }
 
-        const fieldType = event.dataTransfer?.getData(DRAG_MIME)
-            || event.dataTransfer?.getData('text/plain');
+        const fieldType = event.dataTransfer?.getData(DRAG_MIME);
 
         if (!fieldType) {
             return;
         }
 
+        event.preventDefault();
+        canvas.classList.remove('form-builder-canvas--drag-over');
         addField(fieldType);
     });
 }

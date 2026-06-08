@@ -117,6 +117,52 @@ export function updateField(id, updates) {
 }
 
 /**
+ * @param {string} fieldId
+ * @param {string} targetFieldId
+ * @param {boolean} insertAfter
+ */
+export function reorderField(fieldId, targetFieldId, insertAfter) {
+    const fromIndex = fields.findIndex((field) => field.id === fieldId);
+    let toIndex = fields.findIndex((field) => field.id === targetFieldId);
+
+    if (fromIndex === -1 || toIndex === -1 || fieldId === targetFieldId) {
+        return;
+    }
+
+    if (insertAfter) {
+        toIndex += 1;
+    }
+
+    const nextFields = [...fields];
+    const [movedField] = nextFields.splice(fromIndex, 1);
+
+    if (fromIndex < toIndex) {
+        toIndex -= 1;
+    }
+
+    nextFields.splice(toIndex, 0, movedField);
+    fields = nextFields;
+    notifyFields();
+}
+
+/**
+ * @param {string} fieldId
+ */
+export function moveFieldToEnd(fieldId) {
+    const fromIndex = fields.findIndex((field) => field.id === fieldId);
+
+    if (fromIndex === -1 || fromIndex === fields.length - 1) {
+        return;
+    }
+
+    const nextFields = [...fields];
+    const [movedField] = nextFields.splice(fromIndex, 1);
+    nextFields.push(movedField);
+    fields = nextFields;
+    notifyFields();
+}
+
+/**
  * @param {string} id
  */
 export function selectField(id) {
