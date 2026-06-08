@@ -13,4 +13,9 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
     .vue()
-    .sass('resources/sass/app.scss', 'public/css');
+    .sass('resources/sass/app.scss', 'public/css')
+    .js('resources/js/form-builder/index.js', 'public/js/form-builder.js')
+    .postCss('resources/css/form-builder.css', 'public/css', [
+        require('tailwindcss'),
+        require('autoprefixer'),
+    ]);

@@ -19,6 +19,7 @@
 	<title>{{$title}}</title>
 
 	@include('includes.css')
+	@stack('styles')
 <style>
 .app-content .side-app {
     padding: 20px 30px 0 30px !important;
@@ -48,6 +49,7 @@
 <a href="#top" id="back-to-top"><i class="fa fa-long-arrow-up"></i></a>
 
 @include('includes.js')
+@stack('scripts')
 
 </body>
 
