@@ -8,14 +8,20 @@ export function initPreviewMode() {
         return;
     }
 
-    if (root.classList.contains('form-builder--preview')) {
-        toggle.textContent = 'Exit Preview';
+    const label = toggle.querySelector('[data-fb-preview-label]');
+
+    if (root.classList.contains('form-builder--preview') && label) {
+        label.textContent = 'Exit Preview';
         toggle.setAttribute('aria-pressed', 'true');
     }
 
     toggle.addEventListener('click', () => {
         const isPreview = root.classList.toggle('form-builder--preview');
-        toggle.textContent = isPreview ? 'Exit Preview' : 'Preview';
+
+        if (label) {
+            label.textContent = isPreview ? 'Exit Preview' : 'Preview';
+        }
+
         toggle.setAttribute('aria-pressed', isPreview ? 'true' : 'false');
         persistDraft();
     });

@@ -12,14 +12,13 @@
 @endpush
 
 @section('content')
-<div class="app-content form-builder-app-content">
-    <div class="side-app form-builder-side-app">
-        <div class="form-builder form-builder-shell">
-            <x-form-builder.field-templates />
-            <x-form-builder.header :submission-url="url('/forms/submit')" />
+    <div class="form-builder form-builder-shell">
+        <x-form-builder.field-templates />
+        <x-form-builder.header :submission-url="url('/forms/submit')" />
 
+        <div class="form-builder-container">
             <div class="form-builder-workspace">
-                <div class="form-builder-workspace__main">
+                <div class="form-builder-workspace__canvas">
                     <x-form-builder.canvas />
                 </div>
                 <x-form-builder.palette />
@@ -28,7 +27,7 @@
             <x-form-builder.footer />
         </div>
     </div>
+
     <x-form-builder.schema-modal />
     <x-form-builder.delete-field-modal />
-</div>
 @endsection

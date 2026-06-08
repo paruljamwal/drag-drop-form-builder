@@ -45,7 +45,7 @@
             Deleting this field will remove all of its settings and validation rules.
         </p>
 
-        <footer class="form-builder-delete-modal__footer">
+        <div class="form-builder-delete-modal__footer" role="group" aria-label="Delete field actions">
             <button
                 type="button"
                 id="form-builder-delete-keep"
@@ -63,6 +63,6 @@
                 <span class="form-builder-delete-modal__btn-label">Delete field</span>
                 <span class="form-builder-delete-modal__btn-spinner" aria-hidden="true"></span>
             </button>
-        </footer>
+        </div>
     </div>
 </div>

@@ -1891,14 +1891,20 @@ function initPreviewMode() {
     return;
   }
 
-  if (root.classList.contains('form-builder--preview')) {
-    toggle.textContent = 'Exit Preview';
+  var label = toggle.querySelector('[data-fb-preview-label]');
+
+  if (root.classList.contains('form-builder--preview') && label) {
+    label.textContent = 'Exit Preview';
     toggle.setAttribute('aria-pressed', 'true');
   }
 
   toggle.addEventListener('click', function () {
     var isPreview = root.classList.toggle('form-builder--preview');
-    toggle.textContent = isPreview ? 'Exit Preview' : 'Preview';
+
+    if (label) {
+      label.textContent = isPreview ? 'Exit Preview' : 'Preview';
+    }
+
     toggle.setAttribute('aria-pressed', isPreview ? 'true' : 'false');
     (0,_persistence__WEBPACK_IMPORTED_MODULE_0__.persistDraft)();
   });
@@ -2607,14 +2613,7 @@ function initTitleCounter() {
   var updateCharCount = function updateCharCount() {
     var length = titleInput.value.length;
     charCount.textContent = "".concat(length, " / ").concat(maxLength);
-
-    if (length >= maxLength) {
-      charCount.classList.add('text-red-600');
-      charCount.classList.remove('text-gray-500');
-    } else {
-      charCount.classList.remove('text-red-600');
-      charCount.classList.add('text-gray-500');
-    }
+    charCount.classList.toggle('form-builder-meta-card__count--limit', length >= maxLength);
   };
 
   titleInput.addEventListener('input', updateCharCount);

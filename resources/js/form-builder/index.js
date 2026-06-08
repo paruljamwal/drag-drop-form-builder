@@ -37,13 +37,7 @@ function initTitleCounter() {
         const length = titleInput.value.length;
         charCount.textContent = `${length} / ${maxLength}`;
 
-        if (length >= maxLength) {
-            charCount.classList.add('text-red-600');
-            charCount.classList.remove('text-gray-500');
-        } else {
-            charCount.classList.remove('text-red-600');
-            charCount.classList.add('text-gray-500');
-        }
+        charCount.classList.toggle('form-builder-meta-card__count--limit', length >= maxLength);
     };
 
     titleInput.addEventListener('input', updateCharCount);
