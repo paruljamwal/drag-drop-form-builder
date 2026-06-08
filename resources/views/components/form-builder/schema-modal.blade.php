@@ -6,15 +6,7 @@
     aria-labelledby="form-builder-schema-modal-title"
 >
     <div class="form-builder-schema-modal__panel">
-        <div class="flex items-start justify-between gap-4 border-b border-gray-200 px-5 py-4">
-            <div>
-                <h2 id="form-builder-schema-modal-title" class="text-lg font-semibold text-gray-900">
-                    Form JSON Schema
-                </h2>
-                <p class="mt-1 text-sm text-gray-500">
-                    Copy this JSON for your README or backend integration.
-                </p>
-            </div>
+        <div class="form-builder-schema-modal__header">
             <button
                 type="button"
                 class="form-builder-schema-modal__close"
@@ -23,9 +15,15 @@
             >
                 &times;
             </button>
+            <h2 id="form-builder-schema-modal-title" class="form-builder-schema-modal__title">
+                Form JSON Schema
+            </h2>
+            <p class="form-builder-schema-modal__subtitle">
+                Copy this JSON for your README or backend integration.
+            </p>
         </div>
 
-        <div class="p-5">
+        <div class="form-builder-schema-modal__body">
             <textarea
                 id="form-builder-schema-output"
                 class="form-builder-schema-modal__output"
@@ -35,7 +33,7 @@
             ></textarea>
         </div>
 
-        <div class="flex flex-col-reverse gap-2 border-t border-gray-200 px-5 py-4 sm:flex-row sm:justify-end">
+        <div class="form-builder-schema-modal__footer">
             <button
                 type="button"
                 class="form-builder-schema-modal__btn form-builder-schema-modal__btn--secondary"
