@@ -21,6 +21,7 @@
             </main>
 
             <x-form-builder.footer />
+            <x-form-builder.schema-modal />
         </div>
     </div>
 </div>

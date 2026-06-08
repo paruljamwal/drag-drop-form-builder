@@ -4,6 +4,7 @@ import { initDragDrop } from './drag-drop';
 import { initFieldActions } from './field-actions';
 import { initFieldOptionsPanel } from './field-options';
 import { initFieldReorder } from './field-reorder';
+import { initSchemaOutput } from './schema-output';
 
 document.addEventListener('DOMContentLoaded', () => {
     initTitleCounter();
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFieldActions();
     initFieldOptionsPanel();
     initFieldReorder();
+    initSchemaOutput();
 });
 
 function initTitleCounter() {

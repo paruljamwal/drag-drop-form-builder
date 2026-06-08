@@ -143,4 +143,33 @@
         @apply rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 transition-colors;
         @apply hover:border-red-300 hover:bg-red-100;
     }
+
+    .form-builder .form-builder-schema-modal {
+        @apply fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4;
+    }
+
+    .form-builder .form-builder-schema-modal__panel {
+        @apply flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl bg-white shadow-xl;
+    }
+
+    .form-builder .form-builder-schema-modal__close {
+        @apply inline-flex h-9 w-9 items-center justify-center rounded-md text-2xl leading-none text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700;
+    }
+
+    .form-builder .form-builder-schema-modal__output {
+        @apply block w-full resize-y rounded-lg border border-gray-300 bg-gray-50 p-4 font-mono text-xs leading-relaxed text-gray-800;
+        @apply focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500;
+    }
+
+    .form-builder .form-builder-schema-modal__btn {
+        @apply inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium transition-colors;
+    }
+
+    .form-builder .form-builder-schema-modal__btn--primary {
+        @apply bg-indigo-600 text-white hover:bg-indigo-700;
+    }
+
+    .form-builder .form-builder-schema-modal__btn--secondary {
+        @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+    }
 }
