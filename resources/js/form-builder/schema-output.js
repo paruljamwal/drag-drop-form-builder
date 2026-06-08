@@ -5,6 +5,7 @@ export function initSchemaOutput() {
     const modal = document.getElementById('form-builder-schema-modal');
     const output = document.getElementById('form-builder-schema-output');
     const copyButton = document.getElementById('form-builder-schema-copy');
+    const copyFooterButton = document.getElementById('form-builder-schema-copy-footer');
     const closeButtons = modal?.querySelectorAll('[data-fb-close-schema-modal]');
 
     if (!nextButton || !modal || !output) {
@@ -23,17 +24,10 @@ export function initSchemaOutput() {
         document.body.classList.add('overflow-hidden');
     });
 
-    copyButton?.addEventListener('click', async () => {
-        const json = output.value;
+    const copyHandlers = [copyButton, copyFooterButton].filter(Boolean);
 
-        try {
-            await navigator.clipboard.writeText(json);
-            showCopyFeedback(copyButton, 'Copied!');
-        } catch {
-            output.select();
-            document.execCommand('copy');
-            showCopyFeedback(copyButton, 'Copied!');
-        }
+    copyHandlers.forEach((button) => {
+        button.addEventListener('click', () => copySchemaJson(output, copyHandlers));
     });
 
     closeButtons?.forEach((button) => {
@@ -62,16 +56,51 @@ function closeSchemaModal(modal) {
 }
 
 /**
- * @param {HTMLElement} button
- * @param {string} message
+ * @param {HTMLTextAreaElement} output
+ * @param {HTMLElement[]} copyButtons
  */
-function showCopyFeedback(button, message) {
-    const originalText = button.textContent;
-    button.textContent = message;
+async function copySchemaJson(output, copyButtons) {
+    const json = output.value;
+
+    try {
+        await navigator.clipboard.writeText(json);
+    } catch {
+        output.select();
+        document.execCommand('copy');
+    }
+
+    copyButtons.forEach((button) => showCopyFeedback(button));
+}
+
+/**
+ * @param {HTMLElement} button
+ */
+function showCopyFeedback(button) {
+    const label = button.querySelector('[data-fb-copy-label]');
+
+    if (label instanceof HTMLElement) {
+        const originalText = label.textContent;
+        label.textContent = 'Copied!';
+        button.disabled = true;
+
+        window.setTimeout(() => {
+            label.textContent = originalText;
+            button.disabled = false;
+        }, 1500);
+
+        return;
+    }
+
+    const originalLabel = button.getAttribute('aria-label') || 'Copy JSON';
+    button.classList.add('form-builder-schema-modal__copy--copied');
+    button.setAttribute('aria-label', 'Copied!');
+    button.setAttribute('title', 'Copied!');
     button.disabled = true;
 
     window.setTimeout(() => {
-        button.textContent = originalText;
+        button.classList.remove('form-builder-schema-modal__copy--copied');
+        button.setAttribute('aria-label', originalLabel);
+        button.setAttribute('title', originalLabel);
         button.disabled = false;
     }, 1500);
 }

@@ -1549,6 +1549,7 @@ function initSchemaOutput() {
   var modal = document.getElementById('form-builder-schema-modal');
   var output = document.getElementById('form-builder-schema-output');
   var copyButton = document.getElementById('form-builder-schema-copy');
+  var copyFooterButton = document.getElementById('form-builder-schema-copy-footer');
   var closeButtons = modal === null || modal === void 0 ? void 0 : modal.querySelectorAll('[data-fb-close-schema-modal]');
 
   if (!nextButton || !modal || !output) {
@@ -1564,36 +1565,12 @@ function initSchemaOutput() {
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
   });
-  copyButton === null || copyButton === void 0 ? void 0 : copyButton.addEventListener('click', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var json;
-    return _regeneratorRuntime().wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            json = output.value;
-            _context.prev = 1;
-            _context.next = 4;
-            return navigator.clipboard.writeText(json);
-
-          case 4:
-            showCopyFeedback(copyButton, 'Copied!');
-            _context.next = 12;
-            break;
-
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](1);
-            output.select();
-            document.execCommand('copy');
-            showCopyFeedback(copyButton, 'Copied!');
-
-          case 12:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, null, [[1, 7]]);
-  })));
+  var copyHandlers = [copyButton, copyFooterButton].filter(Boolean);
+  copyHandlers.forEach(function (button) {
+    button.addEventListener('click', function () {
+      return copySchemaJson(output, copyHandlers);
+    });
+  });
   closeButtons === null || closeButtons === void 0 ? void 0 : closeButtons.forEach(function (button) {
     button.addEventListener('click', function () {
       return closeSchemaModal(modal);
@@ -1619,17 +1596,79 @@ function closeSchemaModal(modal) {
   document.body.classList.remove('overflow-hidden');
 }
 /**
- * @param {HTMLElement} button
- * @param {string} message
+ * @param {HTMLTextAreaElement} output
+ * @param {HTMLElement[]} copyButtons
  */
 
 
-function showCopyFeedback(button, message) {
-  var originalText = button.textContent;
-  button.textContent = message;
+function copySchemaJson(_x, _x2) {
+  return _copySchemaJson.apply(this, arguments);
+}
+/**
+ * @param {HTMLElement} button
+ */
+
+
+function _copySchemaJson() {
+  _copySchemaJson = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(output, copyButtons) {
+    var json;
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            json = output.value;
+            _context.prev = 1;
+            _context.next = 4;
+            return navigator.clipboard.writeText(json);
+
+          case 4:
+            _context.next = 10;
+            break;
+
+          case 6:
+            _context.prev = 6;
+            _context.t0 = _context["catch"](1);
+            output.select();
+            document.execCommand('copy');
+
+          case 10:
+            copyButtons.forEach(function (button) {
+              return showCopyFeedback(button);
+            });
+
+          case 11:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[1, 6]]);
+  }));
+  return _copySchemaJson.apply(this, arguments);
+}
+
+function showCopyFeedback(button) {
+  var label = button.querySelector('[data-fb-copy-label]');
+
+  if (label instanceof HTMLElement) {
+    var originalText = label.textContent;
+    label.textContent = 'Copied!';
+    button.disabled = true;
+    window.setTimeout(function () {
+      label.textContent = originalText;
+      button.disabled = false;
+    }, 1500);
+    return;
+  }
+
+  var originalLabel = button.getAttribute('aria-label') || 'Copy JSON';
+  button.classList.add('form-builder-schema-modal__copy--copied');
+  button.setAttribute('aria-label', 'Copied!');
+  button.setAttribute('title', 'Copied!');
   button.disabled = true;
   window.setTimeout(function () {
-    button.textContent = originalText;
+    button.classList.remove('form-builder-schema-modal__copy--copied');
+    button.setAttribute('aria-label', originalLabel);
+    button.setAttribute('title', originalLabel);
     button.disabled = false;
   }, 1500);
 }
